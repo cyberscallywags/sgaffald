@@ -49,7 +49,7 @@ class LoginIn(BaseModel):
     """Credentials for `POST /auth/login`. In mock mode every demo member shares one password."""
 
     email: Email
-    password: str = Field(min_length=1, examples=["demo"])
+    password: str = Field(min_length=1, examples=["demo"], json_schema_extra={"format": "password"})
 
 
 class Session(BaseModel):
