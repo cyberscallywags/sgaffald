@@ -18,11 +18,15 @@ Every layer is tested, from pure functions to a real phone browser against the f
 
 ## What each layer proves
 
-- **Unit**: the API, the UI (wired to the real API app in-process), the site manifest
-  rules, settings, the docs generator, and that every copy of the brand
-  is current. Assertions read names and colours from `app.meta` and the manifest, never
-  literals, so a renamed fork's tests still pass. Without the `e2e` group, pytest skips
-  collecting `tests/e2e`.
+- **Unit**: the API, sign-on, the UI (wired to the real API app in-process), the site
+  manifest rules, settings, the docs and type generators, the hook scripts, the scaffolds, and
+  that the brand is valid and every copy of it current. Assertions read names and colours from
+  `app.meta` and the manifest, and brand edits go through a helper, never literals, so a
+  re-branded project's tests still pass. Without the `e2e` group, pytest skips collecting
+  `tests/e2e`.
+- **Template smoke** (`uv run task smoke`): makes a new project from the template with
+  another brand, adds an entity, and runs lint and the unit tests in it; see
+  [CI/CD](ci-cd.md#the-template-smoke-test).
 - **Mobile unit**: services, the theme maths, the side menu, the content and sign-in pages,
   the auth interceptor and guard, and the account menu
   (Vitest, mocked HTTP). Runs inside the image build, so a failing spec fails the build.
