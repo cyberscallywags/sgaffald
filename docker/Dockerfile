@@ -25,6 +25,6 @@ ENV SERVICE=${SERVICE} PATH=/app/.venv/bin:$PATH PYTHONUNBUFFERED=1
 RUN useradd --system --uid 10001 app
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
-COPY docker/entrypoint.sh /entrypoint.sh
 USER app
-ENTRYPOINT ["/entrypoint.sh"]
+# A Python module, not a shell script: no line endings or execute bit to break on Windows
+ENTRYPOINT ["python", "-m", "app.serve"]

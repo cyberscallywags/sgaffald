@@ -120,6 +120,7 @@ def test_renaming_the_project_updates_every_copy(fork):
     assert "github.com/Criw/Castell/actions" in (fork / "README.md").read_text()
     assert "RELEASE_IMAGE_PREFIX=ghcr.io/criw/castell" in (fork / ".env.project").read_text()
     assert "COMPOSE_PROJECT_NAME=castell" in (fork / ".env.project").read_text()
+    assert "NETWORK_NAME=castell_network" in (fork / ".env.project").read_text()
     meta = json.loads((fork / "mobile/src/app/core/meta.json").read_text())
     site_name = json.loads((fork / "brand/content/site.json").read_text())["brand"].get("name")
     assert (meta["slug"], meta["brand"]["name"]) == ("castell", site_name or "Castell")

@@ -61,6 +61,6 @@ docs/
   zensical.toml Zensical configuration (the portal)
 mobile/         Ionic + Angular app (its own Docker image)
 scripts/        sync_meta.py: copies and checks the brand where it cannot be read
-docker/         Dockerfiles, nginx configs, entrypoint
+docker/         Dockerfiles, nginx configs
 tests/          unit, integration, e2e (Playwright), load (Locust)
 ```

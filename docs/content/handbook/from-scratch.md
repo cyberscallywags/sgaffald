@@ -48,7 +48,7 @@ Neo4j behind the same repository interface, and a compose file with one service.
 | Adds | Files |
 |---|---|
 | Repository | `src/app/db.py`: `ItemRepo` with `ping`, `ensure_schema`, `create`, `list` |
-| Stack | `docker-compose.yml` (`neo4j`, `api`), `docker/Dockerfile`, `docker/entrypoint.sh` |
+| Stack | `docker-compose.yml` (`neo4j`, `api`), `docker/Dockerfile`, `src/app/serve.py` |
 | Environments | `.env.project`, `.env.test` (throwaway values, committed) |
 | Tests | `tests/integration/test_stack.py`: writes reach Neo4j |
 

@@ -38,6 +38,7 @@ services:
       - "7687:7687"
     volumes:
       - neo4j-data:/data
+    networks: [app]
     healthcheck:
       test: ["CMD-SHELL", "cypher-shell -u neo4j -p '${NEO4J_PASSWORD}' 'RETURN 1' || exit 1"]
       interval: 10s
@@ -54,6 +55,7 @@ services:
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       <<: *http-health
+    networks: [app]
 
   ui:
     image: ${IMAGE_PREFIX:?set in .env.project}/ui:${IMAGE_TAG:-local}
@@ -64,6 +66,7 @@ services:
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/healthz')"]
       <<: *http-health
+    networks: [app]
 
   admin:
     image: ${IMAGE_PREFIX:?set in .env.project}/admin:${IMAGE_TAG:-local}
@@ -74,6 +77,7 @@ services:
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"]
       <<: *http-health
+    networks: [app]
 
   mobile:
     image: ${IMAGE_PREFIX:?set in .env.project}/mobile:${IMAGE_TAG:-local}
@@ -85,6 +89,7 @@ services:
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
       <<: *http-health
+    networks: [app]
 
   docs:   # static docs: Zensical portal at /, Sphinx manual at /manual/
     image: ${IMAGE_PREFIX:?set in .env.project}/docs:${IMAGE_TAG:-local}
@@ -93,6 +98,12 @@ services:
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
       <<: *http-health
+    networks: [app]
+
+networks:
+  app:
+    # From brand.toml via .env.project ("<slug>_network"); change the brand, not this file
+    name: ${NETWORK_NAME:?set in .env.project}
 
 volumes:
   neo4j-data:

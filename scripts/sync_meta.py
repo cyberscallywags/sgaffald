@@ -446,6 +446,8 @@ def env_project(m: dict, _: str | None) -> str:
         "# Project identity for docker compose, loaded before .env.test or .env.production.\n"
         f"PROJECT_SLUG={slug}\n"
         f"COMPOSE_PROJECT_NAME={slug}\n"
+        "# Docker network every service joins\n"
+        f"NETWORK_NAME={slug}_network\n"
         "# Images built locally\n"
         f"IMAGE_PREFIX={slug}\n"
         "# Images published by the release workflow (lower-case)\n"
