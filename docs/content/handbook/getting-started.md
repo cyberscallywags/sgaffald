@@ -39,7 +39,7 @@ uv run task down      # stop it and drop the volumes
 | `admin` | Streamlit | <http://localhost:8501> |
 | `mobile` | Ionic + Angular, served by nginx, proxies `/api` | <http://localhost:8100> |
 | `docs` | Zensical portal + Sphinx manual | <http://localhost:8200> |
-| `neo4j` | Neo4j Enterprise, evaluation licence | <http://localhost:7474> |
+| `neo4j` | Neo4j Community (Enterprise optional) | <http://localhost:7474> |
 
 The agent behind `POST /ask` uses Pydantic AI's offline `TestModel` when `LLM_MODEL=test`,
 so tests and CI need no API keys.

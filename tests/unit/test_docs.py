@@ -151,6 +151,7 @@ def test_every_page_is_in_the_manual_toctree():
 
 def test_every_referenced_image_exists():
     pattern = re.compile(r"(?:\]\(|src=\"|srcset=\"|```\{image\} )([^)\"\s]+\.(?:png|webp|svg))")
+    inline_code = re.compile(r"(?<!`)`[^`\n]+`(?!`)")  # examples in prose, not references
     for page in CONTENT.rglob("*.md"):
-        for ref in pattern.findall(page.read_text()):
+        for ref in pattern.findall(inline_code.sub("", page.read_text())):
             assert (page.parent / ref).resolve().exists(), f"{page.name}: {ref}"

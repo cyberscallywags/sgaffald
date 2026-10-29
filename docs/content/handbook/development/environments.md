@@ -15,7 +15,8 @@ so `task down -v` never touches a production stack's volumes on the same machine
 
 `.env.test` is committed on purpose with throwaway values only:
 
-- Neo4j Enterprise with `NEO4J_LICENSE=eval` (evaluation licence).
+- Neo4j Community, which needs no licence agreement. To try Enterprise, set
+  `NEO4J_IMAGE=neo4j:2026.06.0-enterprise` and `NEO4J_LICENSE=eval` (the evaluation licence).
 - `LLM_MODEL=test`, the offline model, so no API keys.
 - Images built locally (`IMAGE_PREFIX` from `.env.project`, `IMAGE_TAG=local`).
 - All ports bound to `127.0.0.1`.
@@ -34,7 +35,8 @@ Copy `.env.production.example` to `.env.production` (git-ignored) and fill it in
 - switches every service to the released GHCR images (`IMAGE_PREFIX=${RELEASE_IMAGE_PREFIX}`,
   `IMAGE_TAG`), with no
   local builds;
-- requires `NEO4J_LICENSE=yes`, a commercial Neo4j Enterprise licence;
+- runs Neo4j Community unless `NEO4J_IMAGE` names an Enterprise image, which also needs
+  `NEO4J_LICENSE=yes` and a commercial Neo4j Enterprise licence;
 - hides the database and API ports;
 - adds restart policies.
 

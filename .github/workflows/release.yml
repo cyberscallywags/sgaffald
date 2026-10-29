@@ -1,5 +1,10 @@
-# Merge to main  -> re-run CI, then build + push  ghcr.io/<owner>/<repo>/<service>:main and :sha-<commit>
-# Push tag vX.Y.Z -> promote that commit's images (no rebuild) to :vX.Y.Z and :latest
+# Merge to main  -> re-run CI, then build + push  ghcr.io/<owner>/<repo>/<service>:main and :sha-<commit>,
+#                   each with an SBOM and build provenance, signed with cosign (keyless, GitHub OIDC)
+# Push tag vX.Y.Z -> promote that commit's images (no rebuild) to :vX.Y.Z and :latest, and publish a
+#                   GitHub release whose notes come from the commit prefixes (cliff.toml)
+# Verify an image: cosign verify ghcr.io/<owner>/<repo>/api:latest \
+#   --certificate-identity-regexp 'https://github.com/<owner>/<repo>/.github/workflows/release.yml@.*' \
+#   --certificate-oidc-issuer https://token.actions.githubusercontent.com
 name: Release
 
 on:
@@ -19,7 +24,7 @@ jobs:
     if: github.ref_type == 'branch'
     needs: ci
     runs-on: ubuntu-latest
-    permissions: { contents: read, packages: write }
+    permissions: { contents: read, packages: write, id-token: write, attestations: write }
     strategy:
       matrix:
         include:
@@ -38,6 +43,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v7
+        id: build
         with:
           context: .
           file: ${{ matrix.file }}
@@ -49,6 +55,13 @@ jobs:
           labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+          sbom: true                # an SPDX SBOM attached to the image
+          provenance: mode=max      # SLSA build provenance attached to the image
+      - uses: sigstore/cosign-installer@v3
+      - name: Sign the image (keyless; the signature covers every tag of this digest)
+        env:
+          IMAGE: ${{ env.PREFIX }}/${{ matrix.service }}@${{ steps.build.outputs.digest }}
+        run: cosign sign --yes "$IMAGE"
 
   promote:
     if: github.ref_type == 'tag'
@@ -74,3 +87,22 @@ jobs:
             -t "$PREFIX/${{ matrix.service }}:$VERSION" \
             -t "$PREFIX/${{ matrix.service }}:latest" \
             "$SRC"
+
+  notes:
+    if: github.ref_type == 'tag'
+    needs: promote
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - uses: orhun/git-cliff-action@v4
+        id: changelog
+        with:
+          config: cliff.toml
+          args: --latest --strip header
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: ${{ steps.changelog.outputs.content }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "$NOTES"

@@ -163,6 +163,6 @@ def test_admin_shows_healthy_stack(page: Page, demo_admin, demo_password):
         timeout=30_000
     )
     expect(main.get_by_text('"neo4j":true')).to_be_visible()
-    expect(main.get_by_text('"edition":"enterprise"')).to_be_visible()
+    expect(main.get_by_text('"edition":"')).to_be_visible()  # community or enterprise
     expect(page.get_by_test_id("stDataFrame")).to_be_visible()
     expect(page.get_by_test_id("stAlert")).to_have_count(0)

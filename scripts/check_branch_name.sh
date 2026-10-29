@@ -15,7 +15,9 @@ if [[ "$branch" == main && -z "${GITHUB_ACTIONS:-}" ]]; then
   exit 1
 fi
 
-if [[ "$branch" == main || "$branch" =~ ^(feature|bug|task|docs|refactor)/[a-z0-9._-]+$ ]]; then
+# dependabot/... branches come from .github/dependabot.yml's update pull requests.
+if [[ "$branch" == main || "$branch" =~ ^(feature|bug|task|docs|refactor)/[a-z0-9._-]+$ \
+  || "$branch" =~ ^dependabot/ ]]; then
   echo "Branch name OK: $branch"
 else
   [[ -n "${GITHUB_ACTIONS:-}" ]] && printf "::error::" >&2  # annotate the run on GitHub

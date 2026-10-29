@@ -1,0 +1,27 @@
+# OpenSSF Scorecard: checks the repository's security practices (branch protection, pinned
+# actions, signed releases, ...) and publishes the score for the README badge.
+name: Scorecard
+
+on:
+  push:
+    branches: [main]
+  branch_protection_rule:
+  schedule:
+    - cron: "41 5 * * 1"   # weekly
+
+permissions: read-all
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    permissions: { contents: read, security-events: write, id-token: write }
+    steps:
+      - uses: actions/checkout@v7
+        with: { persist-credentials: false }
+      - uses: ossf/scorecard-action@v2
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - uses: github/codeql-action/upload-sarif@v4
+        with: { sarif_file: results.sarif }
