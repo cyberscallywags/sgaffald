@@ -2,7 +2,9 @@
 
 `mobile/`: Ionic 9 + Angular 22 with standalone components, packaged with
 Capacitor 8. It talks to the API only, through `ApiService`
-(`src/app/core/api.service.ts`), whose types mirror the [data models](../../reference/models.md).
+(`src/app/core/api.service.ts`), whose types (`api.types.ts`) are generated from the
+[data models](../../reference/models.md) by `uv run task types`: change a model in
+`src/app/models.py`, run the task, and the compiler shows every screen the change affects.
 
 ## Structure
 
@@ -12,7 +14,8 @@ src/app/
   app.routes.ts          welcome, about, p/:slug, items, sign-in, account
   features.ts            code-backed screens listed after the manifest pages
   core/
-    api.service.ts       HTTP to the API; types mirror models.py
+    api.service.ts       HTTP to the API; re-exports the generated types
+    api.types.ts         GENERATED from src/app/models.py (uv run task types)
     site.store.ts        loads GET /site, caches it on the device, applies the theme
     theme.ts             brand colours -> Ionic colour variables
     icons.ts             the registered icon set

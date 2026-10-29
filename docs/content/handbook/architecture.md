@@ -31,7 +31,7 @@ flowchart LR
 
 | Concern | Source of truth | Used by |
 |---|---|---|
-| Data shapes | `src/app/models.py` | API, UI, admin, tests; mirrored in `mobile/src/app/core/api.service.ts` |
+| Data shapes | `src/app/models.py` | API, UI, admin, tests; generated into `mobile/src/app/core/api.types.ts` by `uv run task types` |
 | Configuration | `src/app/config.py` (`Settings`) | Every Python service |
 | Identity, theme, images | `brand/brand.toml` and `brand/images` | Every service; `task sync` for the docs and mobile builds |
 | Pages | `brand/content/site.json`, served at `GET /site` | Web UI and mobile app |

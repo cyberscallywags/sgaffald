@@ -71,6 +71,7 @@ Every commit runs the pre-commit hooks on the staged files:
 | `check-added-large-files`, `detect-private-key` | no large files or private keys |
 | `no-commit-to-branch` | you are not on `main` |
 | `sync-meta` | the brand is valid and its copies are current (fix with `uv run task sync`) |
+| `api-types` | the mobile app's TypeScript types match the models (fix with `uv run task types`) |
 | `commit-msg` (commit-msg stage) | the message starts with a prefix from the table above |
 | `ruff-check`, `ruff-format` | lint and format Python (fixes what it can) |
 | `uv-lock` | `uv.lock` matches `pyproject.toml` |
