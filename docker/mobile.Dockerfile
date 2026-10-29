@@ -18,7 +18,7 @@ RUN npm run lint && npm run test:ci
 FROM test AS build
 RUN npm run build -- --configuration production
 
-FROM nginxinc/nginx-unprivileged:1.29-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS runtime
 COPY docker/mobile.nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/www /usr/share/nginx/html
 # API_URL (http://api:8000 in compose) is substituted into the template at start-up.
