@@ -71,6 +71,15 @@ jobs:
       - run: uv sync --locked
       - run: uv run task docs
 
+  smoke:   # a project built from the template with another brand passes lint + unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with: { enable-cache: true }
+      - run: uv sync --locked
+      - run: uv run task smoke
+
   integration:
     needs: [branch-name, quality, unit, mobile, docs]
     runs-on: ubuntu-latest
@@ -79,7 +88,7 @@ jobs:
       - uses: astral-sh/setup-uv@v7
         with: { enable-cache: true }
       - run: uv sync --locked --all-groups   # adds the e2e (Playwright) and load (Locust) groups
-      - name: Build images and start stack (Neo4j Enterprise eval)
+      - name: Build images and start stack
         run: uv run task up
       - name: Integration tests
         run: uv run task test_int
@@ -94,7 +103,7 @@ jobs:
         run: uv run task down
 
   ci-passed:   # single required status check for branch protection
-    needs: [branch-name, quality, unit, mobile, docs, integration]
+    needs: [branch-name, quality, unit, mobile, docs, smoke, integration]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All CI stages passed"
