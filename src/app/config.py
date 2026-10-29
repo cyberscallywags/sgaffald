@@ -46,11 +46,12 @@ class Settings(BaseSettings):
         ),
     )
 
-    site_file: Path | None = Field(
+    brand_dir: Path | None = Field(
         None,
         description=(
-            "Site manifest (brand, theme, pages) served at `GET /site`. Unset means the "
-            "bundled sample, `src/app/content/site.json`."
+            "Brand folder: `brand.toml` (identity, theme) and `content/site.json` (pages), "
+            "served at `GET /site`. Unset means the brand bundled with the package, `brand/`. "
+            "Mount another folder and point this at it to re-brand a built image."
         ),
     )
 

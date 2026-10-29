@@ -3,11 +3,6 @@
     "tagline": "Scaffolding for the next project, ready to be renamed and grown.",
     "collective_url": null
   },
-  "theme": {
-    "primary": "#1b4965",
-    "secondary": "#5fa8d3",
-    "tertiary": "#e4572e"
-  },
   "welcome": {
     "slug": "welcome",
     "title": "Welcome",

@@ -1,4 +1,4 @@
-// Dark first, like cyberscallywags.com: unless the reader has picked a theme with Furo's
+// Dark first (brand.toml [theme.docs] scheme = "dark"): unless the reader has picked a theme with Furo's
 // toggle, start in dark. Furo stores the choice in localStorage under "theme".
 (function () {
   try {

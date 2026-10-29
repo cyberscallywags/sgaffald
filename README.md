@@ -1,7 +1,9 @@
-<!-- Badges are generated from project.toml by `uv run task sync`. -->
+<!-- The hero and badges are generated from brand/ by `uv run task sync`. -->
+<!-- sync:hero -->
 <p align="center">
-  <img src="docs/content/assets/images/sgaffald-hero.webp" alt="Sgaffald: scaffolding for the next project, ready to be renamed and grown" width="100%">
+  <img src="docs/content/assets/brand/hero.webp" alt="Sgaffald: scaffolding for the next project, ready to be renamed and grown" width="100%">
 </p>
+<!-- /sync:hero -->
 
 <!-- sync:header -->
 ---
@@ -22,9 +24,8 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](.pre-commit-config.yaml)
 <!-- /sync:header -->
 
-<b>This Cyber Scallywags base template.</b> </br>
-The smallest stack that connects every part and is ready to
-be renamed and grown into a real project.
+**A full-stack base template:** the smallest stack that connects every part and is ready to
+be renamed, re-branded and grown into a real project.
 
 | Service | Tech | Local URL |
 |---|---|---|
@@ -77,54 +78,43 @@ Copying folders by hand drops dotfiles (`.github/`, `.env.*`, `.pre-commit-confi
 Make the renaming changes below on a branch (for example `task/rename-from-template`) and open a
 PR. After `uv run pre-commit install`, the pre-push hook blocks pushes to `main`.
 
-### 2. Set the identity: `project.toml`, then `uv run task sync`
+### 2. Set the brand: `brand/`, then `uv run task sync`
 
-| Field | Sgaffald | Data Volunteer Network |
-|---|---|---|
-| `project.name` | `Sgaffald` | `Data Volunteer Network` |
-| `project.slug` (lower-case; images, compose project) | `sgaffald` | `data-volunteer-network` |
-| `project.description` | `Cyber Scallywags base template: …` | `Connects volunteers with organisations that need their data skills` |
-| `project.year` | `2026` | the copyright year |
-| `organisation.name` / `url` / `motto` | Cyber Scallywags | keep, or the owning organisation |
-| `repository.owner` | `cyberscallywags` | `cyberscallywags` |
-| `repository.name` | `sgaffald` | `data-volunteer-network` |
-| `mobile.app_id` (reverse-DNS, no hyphens) | `com.cyberscallywags.sgaffald` | `com.cyberscallywags.datavolunteernetwork` |
+Everything project-specific lives in [`brand/`](brand/README.md). Start from the neutral
+example (the Cyber Scallywags artwork is not licensed for reuse), then edit it:
 
-`uv run task sync` then rewrites every copy that the code cannot read directly. Don't edit these
-by hand:
+```bash
+rm -r brand && cp -r examples/brands/neutral brand
+```
 
-- `README.md` badges
-- `docs/zensical.toml` site name and footer
-- `.env.project` compose project and image prefixes
-- `pyproject.toml` description
-- `mobile/package.json`, `package-lock.json`, `ionic.config.json`, `src/index.html` title,
-  `src/app/core/meta.json` and `src/theme/_brand.scss`
+| File | Change |
+|---|---|
+| `brand/brand.toml` `[project]` | `name` (`Data Volunteer Network`), `slug` (`data-volunteer-network`), `description`, `year` |
+| `brand/brand.toml` `[organisation]`, `[repository]`, `[mobile]` | the owning organisation, the GitHub owner and repository, the reverse-DNS app id (no hyphens) |
+| `brand/brand.toml` `[theme]`, `[theme.docs]` | the app colours, and optionally the docs palette |
+| `brand/images/` and `[images]` | mark and favicon (required); logo, hero, crest, app icon, splash (optional) |
+| `brand/content/site.json` | the tagline, welcome page, about page and sidebar pages |
+| `brand/docs/home.md`, `about.md` | the docs portal's home and about pages |
 
-`uv run task test` fails if any of them are stale.
+`uv run task sync` checks the brand (images present and large enough, alt text, WCAG AA
+contrast) and then rewrites every copy the code cannot read directly: the README hero and
+badges, both docs sites' names, logos, palettes and brand pages, the compose variables, the
+distribution name, the mobile app's metadata, favicon and first-paint theme, and the web UI's
+static images. Don't edit those by hand; `uv run task test` fails if any is stale. Run
+`uv lock` afterwards so `uv.lock` agrees with the new distribution name. The full reference is
+the [Brand kit](docs/content/guides/brand-kit.md).
 
 ### 3. Set the version: `pyproject.toml`
 
 - `version`: reset to `0.1.0` for the new project.
 
-### 4. Set the brand and content: `src/app/content/site.json`
-
-| Field | Change to |
-|---|---|
-| `brand.tagline` | e.g. `Data skills, where they're needed.` |
-| `brand.name`, `brand.collective`, `brand.collective_url` | optional; default to `project.name` and `organisation.name` |
-| `theme.primary` / `secondary` / `tertiary` | the new brand colours |
-| `welcome` and the pages | the project's own welcome page and sidebar pages |
-
-Run `uv run task sync` again afterwards so the mobile app's first paint uses the new colours. See
-[Site manifest](docs/content/site-manifest.md).
-
-### 5. The Python package stays `app`
+### 4. The Python package stays `app`
 
 The import package is `src/app` in every project built from this template, so there is nothing to
 rename. `uv run task sync` names the distribution after `project.slug` (`[project] name` and the
-`<slug>[api,ui]` extras in `pyproject.toml`); run `uv lock` afterwards so `uv.lock` agrees.
+`<slug>[api,ui]` extras in `pyproject.toml`).
 
-### 6. Model the domain
+### 5. Model the domain
 
 Replace the sample `Item` with your own models, for example `Volunteer` and `Opportunity`:
 
@@ -138,20 +128,13 @@ Replace the sample `Item` with your own models, for example `Volunteer` and `Opp
 
 The tests show the pattern for each layer.
 
-### 7. Replace images and styling
-
-- `docs/content/assets/images/`: hero, logo, crest and favicon. Update the hero path at the top
-  of this README and `logo` in `docs/zensical.toml`.
-- `mobile/src/assets/icon/favicon.png`
-- `docs/content/assets/stylesheets/scallywag.css`
-
-### 8. Environments
+### 6. Environments
 
 - `.env.test`: `NEO4J_PASSWORD` (a throwaway value; the tests read the same one).
 - `.env.production`: copy it from `.env.production.example` and fill it in. It is never
   committed. Set a real `LLM_MODEL` and add its provider extra, e.g. `pydantic-ai-slim[anthropic]`.
 
-### 9. GitHub repository settings (not copied by a template)
+### 7. GitHub repository settings (not copied by a template)
 
 - Secrets and variables:
   - `CODECOV_TOKEN` secret
@@ -159,7 +142,7 @@ The tests show the pattern for each layer.
 - Branch rules on `main` and the GHCR package visibility. See
   [One-off repository setup](docs/content/development/ci-cd.md#one-off-repository-setup).
 
-### 10. Clean up and check
+### 8. Clean up and check
 
 - Delete `reports/`.
 - Rewrite the intro above and the pages in `docs/content`: `index.md`, `about.md` and

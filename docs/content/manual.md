@@ -1,12 +1,14 @@
 # Sgaffald reference manual
 
-```{image} assets/images/csw-crest-512.png
-:alt: The Cyber Scallywags crest
-:class: csw-crest csw-crest--float
+% sync:brand
+```{image} assets/brand/crest.webp
+:alt: The Cyber Scallywags crest: a wolf in a flat cap above the words Play, Learn, Share, Grow
+:class: brand-crest brand-crest--float
 ```
 
-{.csw-kicker}
+{.brand-kicker}
 Cyber Scallywags · Reference manual
+% /sync:brand
 
 The Sphinx edition of the Sgaffald docs: the same pages as the [portal](/), plus the
 [Python API](reference/python-api-sphinx.md) generated from docstrings.
@@ -44,6 +46,7 @@ getting-started
 architecture
 site-manifest
 guides/make-it-yours
+guides/brand-kit
 ```
 
 ```{toctree}

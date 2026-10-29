@@ -92,11 +92,11 @@ def test_api_allows_native_app_origin():
 def test_docs_serves_portal_and_manual():
     assert httpx.get(f"{DOCS}/healthz").json() == {"status": "ok"}
     portal = httpx.get(f"{DOCS}/")
-    assert portal.status_code == 200 and "csw-crest-512.webp" in portal.text
+    assert portal.status_code == 200 and "assets/brand/" in portal.text
     # /manual/ redirects to the Sphinx home page, which exists
     assert "url=manual.html" in httpx.get(f"{DOCS}/manual/").text
     assert httpx.get(f"{DOCS}/manual/manual.html").status_code == 200
-    assert httpx.get(f"{DOCS}/assets/images/csw-crest-512.png").status_code == 200
+    assert httpx.get(f"{DOCS}/assets/brand/favicon.png").status_code == 200
 
 
 def test_docs_reference_is_generated_from_the_running_code():

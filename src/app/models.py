@@ -62,7 +62,7 @@ class Theme(BaseModel):
 
 class Brand(BaseModel):
     """Project name and tagline, and the collective behind it. Name and collective default to
-    project.toml's when the manifest leaves them out."""
+    brand.toml's when the manifest leaves them out."""
 
     name: str | None = None
     tagline: str

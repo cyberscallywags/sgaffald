@@ -2,11 +2,13 @@
 Talks to the API over HTTP only, never to Neo4j. Brand, theme and pages come from GET /site,
 the same manifest the mobile app renders, so both frontends stay in step."""
 
+from pathlib import Path
 from typing import Annotated
 
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastui import AnyComponent, FastUI, prebuilt_html
 from fastui import components as c
 from fastui.components.display import DisplayLookup
@@ -18,6 +20,15 @@ from app.meta import get_meta
 from app.models import Brand, ContentPage, Item, ItemIn, Section, Site, Theme
 
 app = FastAPI(title=f"{get_meta().slug}-ui")
+
+# The brand's favicon and mark, copied here from brand/images by `uv run task sync`.
+STATIC = Path(__file__).with_name("static")
+app.mount("/static", StaticFiles(directory=STATIC), name="static")
+
+
+def static_file(stem: str) -> str | None:
+    """URL of the brand image copied as static/<stem>.<ext>, if the brand has one."""
+    return next((f"/static/{p.name}" for p in sorted(STATIC.glob(f"{stem}.*"))), None)
 
 
 def api() -> httpx.AsyncClient:
@@ -112,6 +123,22 @@ def render_page(page: ContentPage, brand: Brand | None = None) -> list[AnyCompon
     return out
 
 
+def brand_head(theme: Theme) -> str:
+    """Favicon link, and brand colours as Bootstrap overrides (the mobile app maps the same
+    values to Ionic). The navbar title gets the brand mark as a CSS background, because
+    FastUI's Navbar title is text only."""
+    icon = static_file("favicon")
+    mark = static_file("mark")
+    link = f'<link rel="icon" href="{icon}">' if icon else ""
+    logo = (
+        f".navbar-brand {{ padding-left: 2.25rem; background: url('{mark}') left center / "
+        "1.75rem no-repeat; }}"
+        if mark
+        else ""
+    )
+    return link + theme_css(theme).replace("</style>", f"{logo}\n</style>")
+
+
 def theme_css(theme: Theme) -> str:
     """Brand colours as Bootstrap overrides; the mobile app maps the same values to Ionic."""
     return f"""<style>
@@ -194,7 +221,7 @@ async def html_landing() -> HTMLResponse:
     except httpx.HTTPError:
         return HTMLResponse(html)  # unthemed shell; the page itself reports the API error
     return HTMLResponse(
-        html.replace("</head>", f"{theme_css(site.theme)}</head>", 1).replace(
+        html.replace("</head>", f"{brand_head(site.theme)}</head>", 1).replace(
             f"<title>{name}</title>", f"<title>{site.brand.name}</title>", 1
         )
     )
