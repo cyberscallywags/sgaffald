@@ -23,8 +23,10 @@ that only reads stays public. `require_role("admin")` limits a route to one role
 ## Graph access
 
 `app.db.ItemRepo` wraps the async Neo4j driver. On start-up the API pings Neo4j and
-creates a uniqueness constraint on `Item.id`. Swap `ItemRepo` and the `Item` models for
-your own domain; the unit tests use an in-memory `FakeRepo` with the same methods.
+creates a uniqueness constraint on `Item.id`. With `STORAGE=memory` it uses
+`MemoryItemRepo` instead, which needs no database (`uv run task dev` does this); both satisfy
+the `ItemStore` protocol, and `GET /health` says which is in use. Swap them and the `Item`
+models for your own domain; the unit tests' `FakeRepo` builds on `MemoryItemRepo`.
 
 ## The agent
 

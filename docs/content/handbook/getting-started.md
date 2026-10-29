@@ -30,6 +30,18 @@ uv run task up        # build + start the test stack, wait until healthy
 uv run task down      # stop it and drop the volumes
 ```
 
+## Without Docker
+
+To try the template or work on a screen, run just the API and the web UI on your machine:
+
+```bash
+uv run task dev       # API on :8000/docs and web UI on :8080, live reload, Ctrl+C to stop
+```
+
+Items live in memory (`STORAGE=memory`) and are gone when you stop; sign in as a demo member
+(password `demo`) to add one. The mobile app, the admin portal and the docs need
+`uv run task up`.
+
 ## Where everything lives
 
 | Service | Tech | Local URL |
