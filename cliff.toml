@@ -1,0 +1,40 @@
+# git-cliff: CHANGELOG.md and the GitHub release notes, grouped by the commit prefixes in
+# Ways of working. Regenerate with: uv run task changelog
+[changelog]
+header = """# Changelog
+
+Generated from the commit messages by `uv run task changelog` (git-cliff, cliff.toml).
+"""
+body = """
+{% if version %}\
+## {{ version | trim_start_matches(pat="v") }} ({{ timestamp | date(format="%Y-%m-%d") }})
+{% else %}\
+## Unreleased
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+{% for commit in commits %}\
+{% set subject = commit.message | split(pat="\n") | first | trim %}
+- {% if subject is matching("^[A-Z]+: ") %}{{ subject | split(pat=": ") | slice(start=1) | join(sep=": ") }}{% else %}{{ subject }}{% endif %}\
+{% endfor %}
+{% endfor %}
+"""
+trim = true
+
+[git]
+conventional_commits = false
+filter_unconventional = false
+split_commits = false
+# The parsers group by prefix; the body template prints the subject without it.
+commit_parsers = [
+  { message = "^Merge", skip = true },
+  { message = "^ADDED", group = "<!-- 0 -->Added" },
+  { message = "^FIXED", group = "<!-- 1 -->Fixed" },
+  { message = "^(REFACTOR|REFACTORED)", group = "<!-- 2 -->Changed" },
+  { message = "^DOCS", group = "<!-- 3 -->Documentation" },
+  { message = "^TASK", group = "<!-- 4 -->Chores" },
+  { message = ".*", group = "<!-- 5 -->Other" },
+]
+protect_breaking_commits = false
+tag_pattern = "v[0-9]+\\.[0-9]+\\.[0-9]+"
+sort_commits = "oldest"
