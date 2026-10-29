@@ -7,7 +7,7 @@ is listed, with its values, in [Configuration](../reference/configuration.md).
 
 `.env.project` holds the project identity: `PROJECT_SLUG`, `COMPOSE_PROJECT_NAME`,
 `IMAGE_PREFIX` (local builds) and `RELEASE_IMAGE_PREFIX` (`ghcr.io/<owner>/<repo>`).
-`uv run task sync` generates it from `project.toml`, so do not edit it by hand. The
+`uv run task sync` generates it from `brand/brand.toml`, so do not edit it by hand. The
 environment files build on it: `.env.test` names its compose project `${PROJECT_SLUG}-test`,
 so `task down -v` never touches a production stack's volumes on the same machine.
 

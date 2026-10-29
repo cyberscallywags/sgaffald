@@ -33,20 +33,22 @@ flowchart LR
 |---|---|---|
 | Data shapes | `src/app/models.py` | API, UI, admin, tests; mirrored in `mobile/src/app/core/api.service.ts` |
 | Configuration | `src/app/config.py` (`Settings`) | Every Python service |
-| Brand, theme, pages | `src/app/content/site.json`, served at `GET /site` | Web UI and mobile app |
+| Identity, theme, images | `brand/brand.toml` and `brand/images` | Every service; `task sync` for the docs and mobile builds |
+| Pages | `brand/content/site.json`, served at `GET /site` | Web UI and mobile app |
 | HTTP API | FastAPI's OpenAPI schema | Swagger UI and the generated [HTTP API](reference/http-api.md) page |
 | Docs reference | `python -m app.docgen` | Both docs sites |
 
 ## Repository layout
 
 ```text
-project.toml    project identity (name, organisation, repository, app id); see Make it yours
+brand/          the brand: brand.toml, content/site.json, images, docs pages; see Brand kit
+examples/brands/neutral/   a neutral brand to start from
 src/app/
   api/          FastAPI service (GET /health, /site, /items; POST /items, /ask)
   ui/           FastUI web frontend
   admin/        Streamlit admin portal
-  content/      site.json, the site manifest, and its loader
-  meta.py       reads project.toml for the services and docs
+  content/      the site manifest loader (the manifest is brand/content/site.json)
+  meta.py       reads brand/brand.toml for the services and docs
   models.py     the shared Pydantic contract
   config.py     Settings, from environment variables
   db.py         Neo4j repository
@@ -57,7 +59,7 @@ docs/
   sphinx/       Sphinx + Furo configuration (the manual)
   zensical.toml Zensical configuration (the portal)
 mobile/         Ionic + Angular app (its own Docker image)
-scripts/        sync_meta.py: copies project.toml and site.json where they cannot be read
+scripts/        sync_meta.py: copies and checks the brand where it cannot be read
 docker/         Dockerfiles, nginx configs, entrypoint
 tests/          unit, integration, e2e (Playwright), load (Locust)
 ```
