@@ -40,4 +40,4 @@ hero_alt = "Example Project: replace this banner with your own"
 kicker = "Example Organisation"
 
 [auth]
-mode = "off"
+mode = "mock"

@@ -2,7 +2,9 @@ import httpx
 import pytest
 
 from app.agent import build_agent
+from app.api.auth import demo_members
 from app.api.main import app
+from app.config import get_settings
 from app.meta import get_meta
 
 
@@ -13,6 +15,12 @@ async def client(fake_repo):
     app.state.agent = build_agent("test")
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://api") as c:
+        # Writes need a member: sign in as the first demo member (tests/unit/test_auth.py
+        # covers sign-on itself).
+        member = demo_members()[0]
+        password = get_settings().auth_demo_password.get_secret_value()
+        login = await c.post("/auth/login", json={"email": member.email, "password": password})
+        c.headers["Authorization"] = f"Bearer {login.json()['token']}"
         yield c
 
 

@@ -1,0 +1,24 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Account</ion-title>
+    <ion-buttons slot="end">
+      <app-account-menu></app-account-menu>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (session.member(); as member) {
+    <ion-list inset data-testid="account">
+      <ion-item><ion-label>Name</ion-label><ion-label slot="end">{{ member.name }}</ion-label></ion-item>
+      <ion-item><ion-label>Email</ion-label><ion-label slot="end">{{ member.email }}</ion-label></ion-item>
+      <ion-item><ion-label>Role</ion-label><ion-label slot="end">{{ member.role }}</ion-label></ion-item>
+    </ion-list>
+    <div class="ion-padding-horizontal">
+      <ion-button expand="block" fill="outline" (click)="signOut()">Sign out</ion-button>
+    </div>
+  }
+</ion-content>

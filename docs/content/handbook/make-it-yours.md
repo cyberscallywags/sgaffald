@@ -107,8 +107,8 @@ The tests show the pattern for each layer.
 
 - **Pick a real model**: set `LLM_MODEL` for production and add the provider extra, e.g.
   `pydantic-ai-slim[anthropic]`.
-- **Connect sign-on**: replace the mobile `SessionService` placeholder with your identity
-  provider and protect the write endpoints.
+- **Connect sign-on**: replace the mock with your identity provider; see
+  [Sign-on](sign-on.md#replacing-it-with-a-real-provider).
 - **Write the docs**: add project pages under `docs/content/project/`; see
   [The docs site](services/docs.md).
 - **Refresh the tooling**: `uv run pre-commit autoupdate`, and pin `NEO4J_IMAGE` to the

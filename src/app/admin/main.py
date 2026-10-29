@@ -32,6 +32,44 @@ async def graph_stats() -> dict:
         await driver.close()
 
 
+def admin_gate() -> None:
+    """Mock sign-on: only `admin` members see the portal. It reads Neo4j directly, so keep it
+    on a private network as well; this gate is a demo, not security (see the handbook)."""
+    if (settings.auth_mode or get_meta().auth.mode) != "mock":
+        return
+    if member := st.session_state.get("member"):
+        st.sidebar.write(f"Signed in as **{member['name']}** ({member['role']})")
+        if st.sidebar.button("Sign out"):
+            del st.session_state["member"]
+            st.rerun()
+        return
+    with st.form("sign-in"):
+        st.subheader("Sign in")
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Sign in")
+    if submitted:
+        try:
+            r = httpx.post(
+                f"{settings.api_url}/auth/login",
+                json={"email": email, "password": password},
+                timeout=5,
+            )
+        except httpx.HTTPError as exc:
+            st.error(f"API unreachable, so nobody can sign in: {exc}")
+            st.stop()
+        if r.status_code != 200:
+            st.error("Wrong email or password")
+        elif r.json()["member"]["role"] != "admin":
+            st.error("The admin portal is for admin members only")
+        else:
+            st.session_state["member"] = r.json()["member"]
+            st.rerun()
+    st.stop()
+
+
+admin_gate()
+
 col1, col2 = st.columns(2)
 
 with col1:

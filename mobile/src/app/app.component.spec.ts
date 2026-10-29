@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ApiService } from './core/api.service';
 import { SessionService } from './core/session.service';
-import { SITE } from './testing/site.fixture';
+import { SITE, session } from './testing/site.fixture';
 
 function setup() {
   TestBed.configureTestingModule({
@@ -63,13 +63,27 @@ describe('AppComponent', () => {
     expect(fixture.nativeElement.querySelector('[data-testid="docs-link"]')).toBeNull();
   });
 
-  it('offers sign-in, then shows the signed-in member', () => {
+  it('offers sign-in, then shows the signed-in member and their role', () => {
     const fixture = setup();
     const signOn = () =>
       (fixture.nativeElement.querySelector('[data-testid="sign-on"]') as HTMLElement).textContent;
     expect(signOn()).toContain('Sign in');
-    TestBed.inject(SessionService).signIn({ name: 'Ada', email: 'ada@example.com' });
+    TestBed.inject(SessionService).session.set(session());
     fixture.detectChanges();
-    expect(signOn()).toContain('Ada');
+    expect(signOn()).toContain('Ada Lovelace');
+    expect(signOn()).toContain('admin');
+  });
+
+  it('hides sign-on when it is off', () => {
+    TestBed.configureTestingModule({
+      imports: [AppComponent],
+      providers: [
+        provideRouter([]),
+        { provide: ApiService, useValue: { site: () => of({ ...SITE, auth: { mode: 'off', demo_users: [] } }) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="sign-on"]')).toBeNull();
   });
 });

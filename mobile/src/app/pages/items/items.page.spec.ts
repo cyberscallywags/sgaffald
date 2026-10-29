@@ -2,7 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 
+import { provideRouter } from '@angular/router';
+
 import { ApiService, Item } from '../../core/api.service';
+import { SessionService } from '../../core/session.service';
+import { SiteStore } from '../../core/site.store';
+import { SITE, session } from '../../testing/site.fixture';
 import { ItemsPage } from './items.page';
 
 const existing: Item = { id: '1', name: 'existing', created_at: '2026-01-01T00:00:00Z' };
@@ -10,7 +15,7 @@ const existing: Item = { id: '1', name: 'existing', created_at: '2026-01-01T00:0
 function setup(api: Partial<ApiService>): ComponentFixture<ItemsPage> {
   TestBed.configureTestingModule({
     imports: [ItemsPage],
-    providers: [{ provide: ApiService, useValue: api }],
+    providers: [provideRouter([]), { provide: ApiService, useValue: api }],
   });
   const fixture = TestBed.createComponent(ItemsPage);
   fixture.detectChanges();
@@ -83,5 +88,21 @@ describe('ItemsPage', () => {
     api.health.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 0 })));
     const fixture = setup(api);
     expect(fixture.nativeElement.textContent).toContain('offline');
+  });
+
+  it('asks for sign-in before adding when sign-on is mock', () => {
+    localStorage.clear();
+    TestBed.configureTestingModule({
+      imports: [ItemsPage],
+      providers: [provideRouter([]), { provide: ApiService, useValue: stub() }],
+    });
+    TestBed.inject(SiteStore).site.set(SITE);
+    const fixture = TestBed.createComponent(ItemsPage);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('form')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="sign-in-to-add"]')).not.toBeNull();
+    TestBed.inject(SessionService).session.set(session());
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('form')).not.toBeNull();
   });
 });

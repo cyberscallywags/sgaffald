@@ -61,7 +61,8 @@ Each page is a list of sections. Four kinds cover most needs:
 
 - Theme colours (in `brand.toml`) are six-digit hex, for example `#1b4965`.
 - Page slugs are lower-case words joined by hyphens, and unique.
-- `welcome`, `about`, `items` and `sign-in` are reserved for the apps' own routes.
+- `welcome`, `about`, `items`, `sign-in`, `login`, `logout` and `account` are reserved for the
+  apps' own routes.
 - Mobile icons must be registered in `mobile/src/app/core/icons.ts`; unknown names show a
   document icon instead of nothing.
 
