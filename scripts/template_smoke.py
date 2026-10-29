@@ -1,6 +1,6 @@
-"""Prove the "make it yours" promise: copy the template, swap in the neutral brand with new
-values, as a new project would, then check that the gate passes and that nothing still names
-the old brand.
+"""Prove the "make it yours" promise: copy the template and make it a new project with
+scripts/new_project.py (what `copier copy` runs), then check that the gate passes and that
+nothing still names the old brand.
 
     uv run task smoke            # in a temporary copy; the working tree is not touched
 
@@ -16,19 +16,17 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# A new project's identity, deliberately unlike the template's.
-NEW = {
-    'name = "Example Project"': 'name = "Castell Data"',
-    'slug = "example-project"': 'slug = "castell-data"',
-    'name = "Example Organisation"': 'name = "Criw Castell"',
-    'url = "https://example.org"': 'url = "https://castell.example"',
-    'owner = "example-org"': 'owner = "criw"',
-    'name = "example-project"': 'name = "castell-data"',
-    'app_id = "org.example.exampleproject"': 'app_id = "org.example.castelldata"',
-    'primary = "#264653"': 'primary = "#3d405b"',
-}
+# A new project's identity, deliberately unlike the template's: scripts/new_project.py's
+# arguments, the same ones `copier copy` passes it.
+NEW = [
+    "--name", "Castell Data",
+    "--organisation", "Criw Castell",
+    "--organisation-url", "https://castell.example",
+    "--owner", "criw",
+    "--primary", "#3d405b",
+]  # fmt: skip
 # Kept as written, or naming the copyright holder: they may name the template's brand.
-EXEMPT = ("examples/", "docs/content/handbook/decisions/", "LICENSE", "CHANGELOG.md", "uv.lock")
+EXEMPT = ("examples/", "docs/content/handbook/decisions/", "LICENSE", "uv.lock")
 
 
 def run(*cmd: str, cwd: Path) -> None:
@@ -81,17 +79,7 @@ def main(argv: list[str] | None = None) -> int:
     project = Path(tempfile.mkdtemp(prefix="template-smoke-")) / "castell-data"
     try:
         copy_template(project)
-        shutil.rmtree(project / "brand")
-        shutil.copytree(project / "examples/brands/neutral", project / "brand")
-        toml = project / "brand/brand.toml"
-        text = toml.read_text()
-        for old, new in NEW.items():
-            if old not in text:
-                raise SystemExit(f"examples/brands/neutral/brand.toml has no {old!r}")
-            text = text.replace(old, new, 1)
-        toml.write_text(text)
-
-        run(sys.executable, "scripts/sync_meta.py", cwd=project)
+        run(sys.executable, "scripts/new_project.py", *NEW, cwd=project)
         run("uv", "lock", "--quiet", cwd=project)
         # a new project is a git repository; some tests list its files with git
         run("git", "init", "--quiet", cwd=project)
@@ -102,6 +90,7 @@ def main(argv: list[str] | None = None) -> int:
 
         pyproject = tomllib.loads((project / "pyproject.toml").read_text())
         assert pyproject["project"]["name"] == "castell-data", pyproject["project"]["name"]
+        assert pyproject["project"]["version"] == "0.1.0"
         if found := leftovers(project, words):
             print("The old brand is still named in:", *found, sep="\n  ", file=sys.stderr)
             return 1
