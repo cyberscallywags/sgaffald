@@ -34,7 +34,7 @@ be renamed, re-branded and grown into a real project.
 | `admin` | Streamlit | http://localhost:8501 |
 | `mobile` | Ionic + Angular (served by nginx, proxies `/api`) | http://localhost:8100 |
 | `docs` | Zensical portal + Sphinx/Furo manual | http://localhost:8200 |
-| `neo4j` | Neo4j Enterprise, evaluation licence | http://localhost:7474 |
+| `neo4j` | Neo4j Community (Enterprise optional) | http://localhost:7474 |
 
 ## Quick start
 
@@ -58,9 +58,17 @@ uv run task verify
 ```
 
 `brand/` holds everything project-specific: identity, colours, images, pages and the docs home
-page. The Cyber Scallywags artwork in the default brand is not licensed for reuse, so start from
+page. The default brand's artwork is not licensed for reuse (see TRADEMARKS.md), so start from
 the neutral example. [Make it yours](docs/content/handbook/make-it-yours.md) walks through every
 step, from creating the repository to replacing the sample domain.
+
+## Contributing and licence
+
+Contributions are welcome: read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of conduct](CODE_OF_CONDUCT.md), and report security problems as described in
+[SECURITY.md](SECURITY.md). The code is released under the [MIT licence](LICENSE); the default
+brand in `brand/` is not (see [TRADEMARKS.md](TRADEMARKS.md)). Changes are listed in the
+[changelog](CHANGELOG.md).
 
 ## Documentation
 

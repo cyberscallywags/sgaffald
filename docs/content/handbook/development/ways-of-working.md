@@ -6,18 +6,18 @@ pre-commit hooks and CI, so the tools catch a missed step before a reviewer has 
 ```mermaid
 flowchart LR
     issue([Issue]) --> branch["Branch<br/>feature/…"]
-    branch --> commit["Commits<br/>pre-commit hooks"]
+    branch --> commit["Commits<br/>pre-commit + commit-msg hooks"]
     commit --> push["Push<br/>pre-push: branch name"]
     push --> pr["Pull request<br/>CI → ci-passed"]
     pr --> main["Merge to main<br/>images :main, :sha-…"]
-    main --> tag["Tag vX.Y.Z<br/>images :vX.Y.Z, :latest"]
+    main --> tag["Tag vX.Y.Z<br/>images :vX.Y.Z, :latest, release notes"]
 ```
 
 ## One-off setup
 
 ```bash
 uv sync
-uv run pre-commit install    # installs the pre-commit and pre-push hooks
+uv run pre-commit install    # installs the pre-commit, commit-msg and pre-push hooks
 ```
 
 See [Getting started](../getting-started.md) for the full set of tools.
@@ -57,8 +57,10 @@ A badly named branch is refused at push time; rename it with `git branch -m <new
 ## 3. Commit
 
 Write commit messages as `PREFIX: what changed`, in the present tense, using the prefix from
-the table above, e.g. `FIXED: reject items with an empty name`. Nothing checks the prefix, so
-reviewers do.
+the table above, e.g. `FIXED: reject items with an empty name`. The `commit-msg` hook refuses a
+message without one (merge, revert and `fixup!` commits pass), and the changelog is built from
+the prefixes: `uv run task changelog` regenerates `CHANGELOG.md`, and each release's notes on
+GitHub come from the same commits (`cliff.toml`).
 
 Every commit runs the pre-commit hooks on the staged files:
 
@@ -69,6 +71,7 @@ Every commit runs the pre-commit hooks on the staged files:
 | `check-added-large-files`, `detect-private-key` | no large files or private keys |
 | `no-commit-to-branch` | you are not on `main` |
 | `sync-meta` | the brand is valid and its copies are current (fix with `uv run task sync`) |
+| `commit-msg` (commit-msg stage) | the message starts with a prefix from the table above |
 | `ruff-check`, `ruff-format` | lint and format Python (fixes what it can) |
 | `uv-lock` | `uv.lock` matches `pyproject.toml` |
 | `actionlint` | the GitHub workflows are valid |
@@ -123,8 +126,11 @@ git switch main && git pull
 git tag v0.2.0 && git push origin v0.2.0
 ```
 
-The tag re-tags the already-tested images as `:v0.2.0` and `:latest`, with no rebuild. It
-fails if the commit never went through `main`. Deploy it as described in
+The tag re-tags the already-tested images as `:v0.2.0` and `:latest`, with no rebuild, and
+publishes a GitHub release whose notes are the commits since the last tag, grouped by prefix.
+It fails if the commit never went through `main`. Run `uv run task changelog` in the version
+bump's pull request so `CHANGELOG.md` matches. Every image is signed and carries an SBOM; see
+[CI/CD](ci-cd.md#verifying-a-release-image). Deploy it as described in
 [Environments](environments.md).
 
 ## Housekeeping
