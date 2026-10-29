@@ -13,9 +13,9 @@ from fastui.components.display import DisplayLookup
 from fastui.events import GoToEvent
 from fastui.forms import fastui_form
 
-from sgaffald.config import get_settings
-from sgaffald.meta import get_meta
-from sgaffald.models import Brand, ContentPage, Item, ItemIn, Section, Site, Theme
+from app.config import get_settings
+from app.meta import get_meta
+from app.models import Brand, ContentPage, Item, ItemIn, Section, Site, Theme
 
 app = FastAPI(title=f"{get_meta().slug}-ui")
 

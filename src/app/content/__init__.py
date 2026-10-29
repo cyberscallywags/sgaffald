@@ -3,9 +3,9 @@
 from functools import lru_cache
 from pathlib import Path
 
-from sgaffald.config import get_settings
-from sgaffald.meta import get_meta
-from sgaffald.models import Site
+from app.config import get_settings
+from app.meta import get_meta
+from app.models import Site
 
 DEFAULT_SITE_FILE = Path(__file__).with_name("site.json")
 

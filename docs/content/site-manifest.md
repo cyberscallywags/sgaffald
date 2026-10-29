@@ -1,6 +1,6 @@
 # Site manifest
 
-One JSON document, `src/sgaffald/content/site.json`, holds the brand, theme colours and
+One JSON document, `src/app/content/site.json`, holds the brand, theme colours and
 pages. The API validates it against the [Site](reference/models.md#site) model and serves it
 at `GET /site`. The web UI and the mobile app both render from it, so they share one look
 and the same pages without either being redeployed.
@@ -24,7 +24,7 @@ project is created or renamed; the version lives in `pyproject.toml`.
 
 | File | Owns | Read when |
 |---|---|---|
-| `project.toml` | Name, slug, description, organisation, repository, mobile app id, copyright year | Build and start-up (`sgaffald.meta`) |
+| `project.toml` | Name, slug, description, organisation, repository, mobile app id, copyright year | Build and start-up (`app.meta`) |
 | `site.json` | Tagline, theme colours, pages and sections | Runtime (`GET /site`) |
 | `pyproject.toml` | Version, dependencies, tooling | Build |
 

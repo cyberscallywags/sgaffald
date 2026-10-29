@@ -9,7 +9,7 @@ import pytest
 from neo4j import GraphDatabase
 from playwright.sync_api import Page, Playwright, expect
 
-from sgaffald.content import get_site
+from app.content import get_site
 
 pytestmark = pytest.mark.e2e
 

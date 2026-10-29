@@ -24,24 +24,24 @@ flowchart LR
 | `mobile` | `api` | Browser calls `/api/*` on its own origin; nginx proxies to the API, so no CORS |
 | native app | `api` | Direct HTTPS; its origin must be listed in `CORS_ORIGINS` |
 | `admin` | `api` and `neo4j` | Health from the API, statistics straight from the graph |
-| `api` | `neo4j` | Async Neo4j driver in `sgaffald.db.ItemRepo` |
+| `api` | `neo4j` | Async Neo4j driver in `app.db.ItemRepo` |
 | `docs` | none | Static HTML built from `docs/content` and the code |
 
 ## One contract, every surface
 
 | Concern | Source of truth | Used by |
 |---|---|---|
-| Data shapes | `src/sgaffald/models.py` | API, UI, admin, tests; mirrored in `mobile/src/app/core/api.service.ts` |
-| Configuration | `src/sgaffald/config.py` (`Settings`) | Every Python service |
-| Brand, theme, pages | `src/sgaffald/content/site.json`, served at `GET /site` | Web UI and mobile app |
+| Data shapes | `src/app/models.py` | API, UI, admin, tests; mirrored in `mobile/src/app/core/api.service.ts` |
+| Configuration | `src/app/config.py` (`Settings`) | Every Python service |
+| Brand, theme, pages | `src/app/content/site.json`, served at `GET /site` | Web UI and mobile app |
 | HTTP API | FastAPI's OpenAPI schema | Swagger UI and the generated [HTTP API](reference/http-api.md) page |
-| Docs reference | `python -m sgaffald.docgen` | Both docs sites |
+| Docs reference | `python -m app.docgen` | Both docs sites |
 
 ## Repository layout
 
 ```text
 project.toml    project identity (name, organisation, repository, app id); see Make it yours
-src/sgaffald/
+src/app/
   api/          FastAPI service (GET /health, /site, /items; POST /items, /ask)
   ui/           FastUI web frontend
   admin/        Streamlit admin portal

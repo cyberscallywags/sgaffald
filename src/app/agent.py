@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from pydantic_ai import Agent, RunContext
 
-from sgaffald.db import ItemRepo
+from app.db import ItemRepo
 
 
 @dataclass

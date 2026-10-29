@@ -7,13 +7,13 @@ Sgaffald is a template. To turn it into a real project:
    every copy the code cannot read directly: the Zensical config, the README title and
    badges, the compose variables, and the mobile app's metadata, title and first-paint
    theme. `uv run task test` fails if one is missed. Set the version in `pyproject.toml`.
-2. **Rename the Python package** (optional): `src/sgaffald` → `src/<name>`, then replace the
-   `sgaffald` imports and the `sgaffald` name in `pyproject.toml`, `docker/entrypoint.sh` and
-   the docs. Identity no longer depends on the package name, so a fork can keep it.
+2. **Keep the Python package name**: the code lives in `src/app` in every project, so there is
+   nothing to rename. `uv run task sync` names the distribution after `project.slug` (the
+   `[project] name` in `pyproject.toml`); run `uv lock` afterwards.
 3. **Model your domain**: replace `Item` in `models.py` and `ItemRepo` in `db.py`. The tests
    show the pattern for each layer, and the [data models](../reference/models.md) page
    regenerates itself.
-4. **Shape the content**: edit `src/sgaffald/content/site.json` (tagline, theme, pages), then
+4. **Shape the content**: edit `src/app/content/site.json` (tagline, theme, pages), then
    run `uv run task sync` again so the mobile app's first paint uses the new colours. See
    [Site manifest](../site-manifest.md).
 5. **Pick a real model**: set `LLM_MODEL` for production and add the provider extra, e.g.

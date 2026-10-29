@@ -10,12 +10,12 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from sgaffald.agent import Deps, build_agent
-from sgaffald.config import get_settings
-from sgaffald.content import get_site
-from sgaffald.db import ItemRepo, make_driver
-from sgaffald.meta import get_meta
-from sgaffald.models import AskIn, AskOut, Health, Item, ItemIn, Site
+from app.agent import Deps, build_agent
+from app.config import get_settings
+from app.content import get_site
+from app.db import ItemRepo, make_driver
+from app.meta import get_meta
+from app.models import AskIn, AskOut, Health, Item, ItemIn, Site
 
 
 @asynccontextmanager

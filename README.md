@@ -106,7 +106,7 @@ by hand:
 
 - `version`: reset to `0.1.0` for the new project.
 
-### 4. Set the brand and content: `src/sgaffald/content/site.json`
+### 4. Set the brand and content: `src/app/content/site.json`
 
 | Field | Change to |
 |---|---|
@@ -118,21 +118,11 @@ by hand:
 Run `uv run task sync` again afterwards so the mobile app's first paint uses the new colours. See
 [Site manifest](docs/content/site-manifest.md).
 
-### 5. Rename the Python package (optional)
+### 5. The Python package stays `app`
 
-Identity no longer depends on the package name, so you can keep `sgaffald`. To rename it:
-
-```bash
-git mv src/sgaffald src/data_volunteer_network
-git grep -l sgaffald -- '*.py' '*.sh' '*.ts' pyproject.toml .env.test \
-  | xargs perl -pi -e 's/\bsgaffald\b/data_volunteer_network/g'
-uv lock
-```
-
-That covers `[project] name`, the `sgaffald[...]` extras, `force-include`, `--cov` and the
-coverage `omit` in `pyproject.toml`, the imports, `docker/entrypoint.sh` and
-`docs/sphinx/conf.py`. Afterwards, fix the two tests that assert on the old slug or title by
-hand: `tests/unit/test_docs.py` (`PROJECT_SLUG`) and `tests/e2e/test_docs_site.py` (`h1#sgaffald`).
+The import package is `src/app` in every project built from this template, so there is nothing to
+rename. `uv run task sync` names the distribution after `project.slug` (`[project] name` and the
+`<slug>[api,ui]` extras in `pyproject.toml`); run `uv lock` afterwards so `uv.lock` agrees.
 
 ### 6. Model the domain
 
@@ -141,7 +131,7 @@ Replace the sample `Item` with your own models, for example `Volunteer` and `Opp
 - `models.py`: `Item` / `ItemIn`
 - `db.py`: `ItemRepo`
 - `api/main.py`: the `/items` routes
-- `admin/app.py`
+- `admin/main.py`
 - `ui/main.py`
 - `mobile/src/app/core/api.service.ts`, `mobile/src/app/pages/items/` and
   `mobile/src/app/features.ts`
@@ -194,5 +184,5 @@ uv run task docs_serve     # build both sites, serve on http://localhost:8200
 
 With the stack running (`uv run task up`) the `docs` container serves both on
 http://localhost:8200, and the web UI and mobile app link to it. Reference pages are generated
-from the code by `python -m sgaffald.docgen`, so they cannot drift; see
+from the code by `python -m app.docgen`, so they cannot drift; see
 [The docs site](docs/content/services/docs.md).

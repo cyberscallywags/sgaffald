@@ -1,6 +1,6 @@
 # Web UI
 
-`src/sgaffald/ui/main.py`: a [FastUI](https://github.com/pydantic/FastUI) frontend. Pages are
+`src/app/ui/main.py`: a [FastUI](https://github.com/pydantic/FastUI) frontend. Pages are
 declared in Python as components; FastUI's React bundle renders them in the browser. It
 talks to the API over HTTP only, never to Neo4j.
 

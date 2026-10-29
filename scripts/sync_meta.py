@@ -34,7 +34,7 @@ def load(root: Path) -> dict:
     site = json.loads(site_file.read_text())
     project, org = meta["project"], meta["organisation"]
     brand = {
-        # The same defaults as sgaffald.content.load_site.
+        # The same defaults as app.content.load_site.
         "name": site["brand"].get("name") or project["name"],
         "tagline": site["brand"]["tagline"],
         "collective": site["brand"].get("collective") or org["name"],
@@ -222,9 +222,16 @@ def readme(m: dict, text: str | None) -> str:
 
 
 def pyproject(m: dict, text: str | None) -> str:
-    """Only [project] description; uv and hatch own everything else, the version included."""
+    """[project] name and description, and the `<name>[extras]` self-references in the
+    dependency groups. uv and hatch own everything else, the version included. The import
+    package stays `app`; only the distribution is named after the slug."""
+    text = text or ""
+    slug = m["project"]["slug"]
+    if found := re.search(r'^name = "([^"]*)"$', text, flags=re.M):
+        text = text.replace(f'"{found[1]}[', f'"{slug}[')
+    text = re.sub(r"^name = .*$", lambda _: f"name = {toml_str(slug)}", text, count=1, flags=re.M)
     line = f"description = {toml_str(m['project']['description'])}"
-    return re.sub(r"^description = .*$", lambda _: line, text or "", count=1, flags=re.M)
+    return re.sub(r"^description = .*$", lambda _: line, text, count=1, flags=re.M)
 
 
 def npm_package(m: dict, text: str | None) -> str:

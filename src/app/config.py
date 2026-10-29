@@ -1,6 +1,6 @@
 """Single source of configuration for every service. Values come from env vars
 (set by docker compose from .env.test or .env.production). Each field's description is
-published in the docs' configuration reference (sgaffald.docgen)."""
+published in the docs' configuration reference (app.docgen)."""
 
 from functools import lru_cache
 from pathlib import Path
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
         None,
         description=(
             "Site manifest (brand, theme, pages) served at `GET /site`. Unset means the "
-            "bundled sample, `src/sgaffald/content/site.json`."
+            "bundled sample, `src/app/content/site.json`."
         ),
     )
 

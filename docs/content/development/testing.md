@@ -20,7 +20,7 @@ Every layer is tested, from pure functions to a real phone browser against the f
 
 - **Unit**: the API, the UI (wired to the real API app in-process), the site manifest
   rules, settings, the docs generator, and that every copy of `project.toml` and the theme
-  is current. Assertions read names and colours from `sgaffald.meta` and the manifest, never
+  is current. Assertions read names and colours from `app.meta` and the manifest, never
   literals, so a renamed fork's tests still pass. Without the `e2e` group, pytest skips
   collecting `tests/e2e`.
 - **Mobile unit**: services, the theme maths, the side menu, the content and sign-in pages

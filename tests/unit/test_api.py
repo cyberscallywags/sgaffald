@@ -1,9 +1,9 @@
 import httpx
 import pytest
 
-from sgaffald.agent import build_agent
-from sgaffald.api.main import app
-from sgaffald.meta import get_meta
+from app.agent import build_agent
+from app.api.main import app
+from app.meta import get_meta
 
 
 @pytest.fixture
@@ -69,7 +69,7 @@ async def test_openapi_identity_comes_from_project_toml(client):
 
 
 async def test_site_carries_the_docs_url_from_settings(client, monkeypatch):
-    from sgaffald.config import get_settings
+    from app.config import get_settings
 
     assert (await client.get("/site")).json()["docs_url"] == "http://localhost:8200"
     monkeypatch.setattr(get_settings(), "docs_url", "")

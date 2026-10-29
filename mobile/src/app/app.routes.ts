@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 const content = () => import('./pages/content/content.page').then((m) => m.ContentPage);
 
-// Reserved paths (welcome, about, items, sign-in) mirror RESERVED_SLUGS in sgaffald/models.py.
+// Reserved paths (welcome, about, items, sign-in) mirror RESERVED_SLUGS in app/models.py.
 export const routes: Routes = [
   { path: 'welcome', loadComponent: content, data: { slug: 'welcome' } },
   { path: 'about', loadComponent: content, data: { slug: 'about' } },

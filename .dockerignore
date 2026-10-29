@@ -7,7 +7,7 @@
 .ruff_cache
 tests
 .env*
-# Throwaway/example values only; the docs image documents them (sgaffald.docgen)
+# Throwaway/example values only; the docs image documents them (app.docgen)
 !.env.project
 !.env.test
 !.env.production.example
