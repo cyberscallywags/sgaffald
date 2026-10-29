@@ -123,8 +123,11 @@ line-length = 100
 target-version = "py314"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "SIM", "ASYNC", "S"]
-ignore = ["S101"]  # asserts are fine in tests
+select = ["E", "F", "I", "B", "UP", "SIM", "ASYNC", "S", "TD"]
+ignore = [
+    "S101",  # asserts are fine in tests
+    "TD003",  # a TODO need not link an issue; TD still wants `# TODO(name): ...`
+]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S105", "S106"]
