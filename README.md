@@ -49,114 +49,25 @@ uv run task verify         # lint → unit → build+start stack → integration
 
 ## Start a new project from this template
 
-The worked example below turns Sgaffald into **Data Volunteer Network**.
-
-### 1. Create the repository (don't copy and paste the folders)
-
-Copying folders by hand drops dotfiles (`.github/`, `.env.*`, `.pre-commit-config.yaml`,
-`.python-version`) and loses the link back to the template. Pick one of these instead:
-
-- **From a GitHub template (recommended, clean history).** Tick *Settings → General →
-  Template repository* on `sgaffald` once, then either press **Use this template** or run:
-
-  ```bash
-  gh repo create cyberscallywags/data-volunteer-network \
-    --template cyberscallywags/sgaffald --public --clone
-  ```
-
-- **Clone and re-point (keeps the template's history, so later template fixes can be merged in).**
-
-  ```bash
-  git clone https://github.com/cyberscallywags/sgaffald.git data-volunteer-network
-  cd data-volunteer-network
-  git remote rename origin template
-  gh repo create cyberscallywags/data-volunteer-network --public --source . --push
-  # later, to pick up template improvements:
-  git fetch template && git merge template/main
-  ```
-
-Make the renaming changes below on a branch (for example `task/rename-from-template`) and open a
-PR. After `uv run pre-commit install`, the pre-push hook blocks pushes to `main`.
-
-### 2. Set the brand: `brand/`, then `uv run task sync`
-
-Everything project-specific lives in [`brand/`](brand/README.md). Start from the neutral
-example (the Cyber Scallywags artwork is not licensed for reuse), then edit it:
-
 ```bash
-rm -r brand && cp -r examples/brands/neutral brand
+gh repo create <owner>/<name> --template cyberscallywags/sgaffald --public --clone
+cd <name>
+rm -r brand && cp -r examples/brands/neutral brand   # then edit brand/
+uv run task sync && uv lock                            # check the brand, rewrite every copy
+uv run task verify
 ```
 
-| File | Change |
-|---|---|
-| `brand/brand.toml` `[project]` | `name` (`Data Volunteer Network`), `slug` (`data-volunteer-network`), `description`, `year` |
-| `brand/brand.toml` `[organisation]`, `[repository]`, `[mobile]` | the owning organisation, the GitHub owner and repository, the reverse-DNS app id (no hyphens) |
-| `brand/brand.toml` `[theme]`, `[theme.docs]` | the app colours, and optionally the docs palette |
-| `brand/images/` and `[images]` | mark and favicon (required); logo, hero, crest, app icon, splash (optional) |
-| `brand/content/site.json` | the tagline, welcome page, about page and sidebar pages |
-| `brand/docs/home.md`, `about.md` | the docs portal's home and about pages |
-
-`uv run task sync` checks the brand (images present and large enough, alt text, WCAG AA
-contrast) and then rewrites every copy the code cannot read directly: the README hero and
-badges, both docs sites' names, logos, palettes and brand pages, the compose variables, the
-distribution name, the mobile app's metadata, favicon and first-paint theme, and the web UI's
-static images. Don't edit those by hand; `uv run task test` fails if any is stale. Run
-`uv lock` afterwards so `uv.lock` agrees with the new distribution name. The full reference is
-the [Brand kit](docs/content/guides/brand-kit.md).
-
-### 3. Set the version: `pyproject.toml`
-
-- `version`: reset to `0.1.0` for the new project.
-
-### 4. The Python package stays `app`
-
-The import package is `src/app` in every project built from this template, so there is nothing to
-rename. `uv run task sync` names the distribution after `project.slug` (`[project] name` and the
-`<slug>[api,ui]` extras in `pyproject.toml`).
-
-### 5. Model the domain
-
-Replace the sample `Item` with your own models, for example `Volunteer` and `Opportunity`:
-
-- `models.py`: `Item` / `ItemIn`
-- `db.py`: `ItemRepo`
-- `api/main.py`: the `/items` routes
-- `admin/main.py`
-- `ui/main.py`
-- `mobile/src/app/core/api.service.ts`, `mobile/src/app/pages/items/` and
-  `mobile/src/app/features.ts`
-
-The tests show the pattern for each layer.
-
-### 6. Environments
-
-- `.env.test`: `NEO4J_PASSWORD` (a throwaway value; the tests read the same one).
-- `.env.production`: copy it from `.env.production.example` and fill it in. It is never
-  committed. Set a real `LLM_MODEL` and add its provider extra, e.g. `pydantic-ai-slim[anthropic]`.
-
-### 7. GitHub repository settings (not copied by a template)
-
-- Secrets and variables:
-  - `CODECOV_TOKEN` secret
-  - `PROJECT_URL` variable and `PROJECT_TOKEN` secret, for the issue → project workflows
-- Branch rules on `main` and the GHCR package visibility. See
-  [One-off repository setup](docs/content/development/ci-cd.md#one-off-repository-setup).
-
-### 8. Clean up and check
-
-- Delete `reports/`.
-- Rewrite the intro above and the pages in `docs/content`: `index.md`, `about.md` and
-  `getting-started.md`.
-- `git grep -i sgaffald` lists anything left over.
-- `uv run task verify` runs the full gate.
-
-The fuller guide is [Make it yours](docs/content/guides/make-it-yours.md).
+`brand/` holds everything project-specific: identity, colours, images, pages and the docs home
+page. The Cyber Scallywags artwork in the default brand is not licensed for reuse, so start from
+the neutral example. [Make it yours](docs/content/handbook/make-it-yours.md) walks through every
+step, from creating the repository to replacing the sample domain.
 
 ## Documentation
 
-Everything else (architecture, the site manifest, each service, testing, environments, CI/CD,
-repository setup, and the generated HTTP API, data model, configuration and task references)
-lives in the docs, built from [`docs/content`](docs/content):
+Everything else lives in the docs, built from [`docs/content`](docs/content): the template
+handbook (architecture, the brand kit, each service, ways of working, testing, CI/CD, decision
+records), the project's own pages, and the generated HTTP API, data model, configuration and
+task references:
 
 ```bash
 uv run task docs_serve     # build both sites, serve on http://localhost:8200
@@ -168,4 +79,4 @@ uv run task docs_serve     # build both sites, serve on http://localhost:8200
 With the stack running (`uv run task up`) the `docs` container serves both on
 http://localhost:8200, and the web UI and mobile app link to it. Reference pages are generated
 from the code by `python -m app.docgen`, so they cannot drift; see
-[The docs site](docs/content/services/docs.md).
+[The docs site](docs/content/handbook/services/docs.md).
