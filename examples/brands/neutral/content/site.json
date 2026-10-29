@@ -1,0 +1,160 @@
+{
+  "brand": {
+    "tagline": "Replace this tagline in brand/content/site.json.",
+    "collective_url": null
+  },
+  "welcome": {
+    "slug": "welcome",
+    "title": "Welcome",
+    "icon": "home-outline",
+    "summary": "Plan the application before writing it: what it is for, who uses it, and how it ships.",
+    "sections": [
+      {
+        "kind": "text",
+        "heading": "What we are building",
+        "body": "Describe the application in two sentences. Who is it for, and what will they be able to do that they cannot do today?"
+      },
+      {
+        "kind": "steps",
+        "heading": "Planning the application",
+        "items": [
+          {
+            "title": "Name the domain",
+            "body": "Replace Item in models.py with the things this project is really about."
+          },
+          {
+            "title": "Shape the content",
+            "body": "Edit content/site.json: brand, theme colours and the pages in the sidebar."
+          },
+          {
+            "title": "Design the screens",
+            "body": "Each page is a list of sections (text, list, steps, cards) rendered the same on web and mobile."
+          },
+          {
+            "title": "Ship it",
+            "body": "Merge to main: CI tests every service, then publishes the images."
+          }
+        ]
+      },
+      {
+        "kind": "cards",
+        "heading": "One contract, every surface",
+        "items": [
+          {
+            "title": "API",
+            "body": "FastAPI + Pydantic AI. The single source of data and content.",
+            "icon": "server-outline"
+          },
+          {
+            "title": "Web",
+            "body": "FastUI pages declared in Python.",
+            "icon": "desktop-outline"
+          },
+          {
+            "title": "Mobile",
+            "body": "Ionic + Angular, packaged with Capacitor.",
+            "icon": "phone-portrait-outline"
+          },
+          {
+            "title": "Graph",
+            "body": "Neo4j holds the project's data.",
+            "icon": "git-network-outline"
+          }
+        ]
+      }
+    ]
+  },
+  "pages": [
+    {
+      "slug": "roadmap",
+      "title": "Roadmap",
+      "icon": "map-outline",
+      "summary": "Where the project is heading, milestone by milestone.",
+      "sections": [
+        {
+          "kind": "steps",
+          "items": [
+            {
+              "title": "Foundations",
+              "body": "Rename the template, set the brand and theme."
+            },
+            {
+              "title": "First feature",
+              "body": "Model one real entity end to end: API, graph, web and mobile."
+            },
+            {
+              "title": "Sign-on",
+              "body": "Connect an identity provider and protect the write endpoints."
+            },
+            {
+              "title": "Release",
+              "body": "Tag v1.0.0 and publish the mobile build."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "architecture",
+      "title": "Architecture",
+      "icon": "layers-outline",
+      "summary": "How the services fit together.",
+      "sections": [
+        {
+          "kind": "list",
+          "heading": "Data flow",
+          "items": [
+            {
+              "title": "ui → api → neo4j"
+            },
+            {
+              "title": "mobile → /api (nginx) → api"
+            },
+            {
+              "title": "admin → api, and admin → neo4j directly"
+            }
+          ]
+        },
+        {
+          "kind": "text",
+          "heading": "Content",
+          "body": "Brand, theme and pages come from GET /site, so web and mobile stay in step without a redeploy of either."
+        }
+      ]
+    }
+  ],
+  "about": {
+    "slug": "about",
+    "title": "About",
+    "icon": "people-outline",
+    "summary": "Who is behind this project, and how to get in touch.",
+    "sections": [
+      {
+        "kind": "text",
+        "heading": "Who we are",
+        "body": "Describe the team or organisation behind the project in a sentence or two."
+      },
+      {
+        "kind": "cards",
+        "heading": "What we value",
+        "items": [
+          {
+            "title": "Ship small, ship often",
+            "body": "Every change passes the same gate, from laptop to production.",
+            "icon": "rocket-outline"
+          },
+          {
+            "title": "Open by default",
+            "body": "Templates, tests and decisions are written down for the next person.",
+            "icon": "globe-outline"
+          }
+        ]
+      },
+      {
+        "kind": "text",
+        "heading": "Get in touch",
+        "body": "Say how people can contribute, ask questions or report a problem."
+      }
+    ]
+  }
+}

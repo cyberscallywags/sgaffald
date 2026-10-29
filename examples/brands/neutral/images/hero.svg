@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-label="Example Project: replace this banner with your own">
+  <rect width="1200" height="400" fill="#264653"/>
+  <rect x="80" y="120" width="160" height="160" rx="16" fill="none" stroke="#2a9d8f" stroke-width="28"/>
+  <text x="300" y="215" font-family="system-ui, sans-serif" font-size="72" font-weight="800" fill="#ffffff">Example Project</text>
+  <text x="302" y="275" font-family="system-ui, sans-serif" font-size="30" fill="#e9c46a">Replace brand/ with your own and run uv run task sync</text>
+</svg>

@@ -1,0 +1,40 @@
+# A neutral starting brand (CC0, see LICENSE). Copy this folder over brand/, replace the
+# placeholders and the images, then run `uv run task sync`. Every field is described in the
+# brand kit page of the docs.
+
+[project]
+name = "Example Project"  # display name: titles, app name, docs
+slug = "example-project"  # lower-case: distribution, images, compose project, cache keys
+description = "A full-stack project: FastAPI, FastUI, Streamlit, Ionic and Neo4j"
+year = 2026  # copyright year
+
+[organisation]
+name = "Example Organisation"
+url = "https://example.org"
+motto = ""
+
+[repository]
+owner = "example-org"
+name = "example-project"
+
+[mobile]
+app_id = "org.example.exampleproject"  # Capacitor appId, reverse-DNS, no hyphens
+
+[theme]
+primary = "#264653"
+secondary = "#2a9d8f"
+tertiary = "#e9c46a"
+
+[theme.docs]
+# Only the scheme is set; every colour is derived from [theme] on neutral dark surfaces.
+scheme = "light"
+
+[images]
+logo = "logo.svg"
+mark = "mark.svg"
+favicon = "favicon.png"
+hero = "hero.svg"
+hero_alt = "Example Project: replace this banner with your own"
+
+[docs]
+kicker = "Example Organisation"
