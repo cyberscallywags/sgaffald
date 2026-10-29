@@ -2,7 +2,6 @@
 
 import importlib.util
 import json
-import re
 import shutil
 import struct
 import subprocess
@@ -16,6 +15,9 @@ ROOT = Path(__file__).parents[2]
 _spec = importlib.util.spec_from_file_location("sync_meta", ROOT / "scripts/sync_meta.py")
 sync_meta = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(sync_meta)
+_spec = importlib.util.spec_from_file_location("new_project", ROOT / "scripts/new_project.py")
+new_project = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(new_project)
 
 
 def brand_words(brand_toml: Path = ROOT / "brand/brand.toml") -> set[str]:
@@ -67,7 +69,8 @@ def fork(tmp_path) -> Path:
     shutil.copytree(ROOT / "brand", tmp_path / "brand")
     if (ROOT / "examples").is_dir():
         shutil.copytree(ROOT / "examples", tmp_path / "examples")
-    rels = ["pyproject.toml", *map(str, sync_meta.output_paths(ROOT))]
+    rels = ["pyproject.toml", "CHANGELOG.md", "scripts/sync_meta.py"]
+    rels += map(str, sync_meta.output_paths(ROOT))
     for rel in rels:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(ROOT / rel, tmp_path / rel)
@@ -78,18 +81,7 @@ def set_brand(fork: Path, table: str, key: str, value: str | None) -> None:
     """Set `key` in `[table]` of the fork's brand.toml to the TOML `value` (None removes it),
     whatever brand the project has, so these tests pass in any project built from the
     template."""
-    path = fork / "brand/brand.toml"
-    lines = path.read_text().splitlines()
-    if f"[{table}]" not in lines:
-        lines += ["", f"[{table}]"]
-    start = lines.index(f"[{table}]") + 1
-    end = next((i for i in range(start, len(lines)) if lines[i].startswith("[")), len(lines))
-    found = next((i for i in range(start, end) if re.match(rf"{key}\s*=", lines[i])), None)
-    if found is not None:
-        lines[found : found + 1] = [] if value is None else [f"{key} = {value}"]
-    elif value is not None:
-        lines.insert(end, f"{key} = {value}")
-    path.write_text("\n".join(lines) + "\n")
+    new_project.set_key(fork / "brand/brand.toml", table, key, value)
 
 
 def brand_toml(fork: Path) -> dict:
@@ -273,3 +265,23 @@ def test_ionic_colours_match_the_mobile_runtime():
 def test_missing_markers_are_an_error():
     with pytest.raises(ValueError, match="sync:header"):
         sync_meta.splice("no markers here", "header", "x", ("<!-- ", " -->"))
+
+
+def test_new_project_rebrands_a_fresh_copy(fork):
+    args = ["--root", str(fork), "--name", "Prawf Data", "--organisation", "Tim Prawf"]
+    assert new_project.main([*args, "--primary", "#3D405B"]) == 0
+    brand = tomllib.loads((fork / "brand/brand.toml").read_text())
+    assert brand["project"]["slug"] == "prawf-data"
+    assert brand["repository"] == {"owner": "tim-prawf", "name": "prawf-data"}
+    assert brand["mobile"]["app_id"] == "org.example.prawfdata"
+    assert brand["theme"]["primary"] == "#3d405b"
+    assert "# display name" in (fork / "brand/brand.toml").read_text()  # comments survive
+    assert tomllib.loads((fork / "pyproject.toml").read_text())["project"]["version"] == "0.1.0"
+    assert "##" not in (fork / "CHANGELOG.md").read_text()  # the template's history is gone
+    assert sync_meta.main(["--root", str(fork), "--check"]) == 0
+
+
+def test_new_project_refuses_a_bad_slug_or_colour(fork, capsys):
+    for bad in (["--slug", "Not A Slug"], ["--primary", "red"]):
+        with pytest.raises(SystemExit):
+            new_project.main(["--root", str(fork), "--name", "X", *bad])
