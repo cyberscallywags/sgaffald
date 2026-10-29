@@ -20,6 +20,7 @@ from fastui.components.display import DisplayLookup
 from fastui.events import GoToEvent, PageEvent
 from fastui.forms import fastui_form
 
+from app import domain
 from app.config import get_settings
 from app.meta import get_meta
 from app.models import Brand, ContentPage, Item, ItemIn, LoginIn, Member, Section, Site, Theme
@@ -118,6 +119,7 @@ def shell(
     links = [nav_link(site.welcome.title, "/")]
     links += [nav_link(p.title, f"/p/{p.slug}") for p in site.pages]
     links.append(nav_link("Items", "/items"))
+    links += [nav_link(module.TITLE, module.PATH) for module in domain.modules()]
     return [
         c.PageTitle(text=f"{title} · {site.brand.name}"),
         c.Navbar(
@@ -375,6 +377,48 @@ async def logout(response: Response) -> list[AnyComponent]:
     # FastUI's GoToEvent applies `query` to the current path and ignores `url`, so a query
     # here would log out again; /welcome is a different path from /logout and /login.
     return [c.FireEvent(event=GoToEvent(url="/welcome"))]
+
+
+# ---------------------------------------------------------------- app.domain entities
+# One list-and-add page per module added with `uv run task new_entity`, before the catch-all.
+
+
+def add_entity_pages(module) -> None:
+    model, model_in, title, path = module.MODEL, module.MODEL_IN, module.TITLE, module.PATH
+
+    async def page(token: Token) -> list[AnyComponent]:
+        site = await fetch_site()
+        member = await fetch_member(site, token)
+        async with api() as client:
+            resp = await client.get(path)
+            resp.raise_for_status()
+        rows = [model.model_validate(row) for row in resp.json()]
+        if can_write(site, member):
+            add: list[AnyComponent] = [c.ModelForm(model=model_in, submit_url=f"/api{path}")]
+        else:
+            add = [c.Button(text="Sign in to add one", on_click=GoToEvent(url="/login"))]
+        columns = [DisplayLookup(field=name) for name in model_in.model_fields]
+        table = c.Table(data=rows, data_model=model, columns=columns) if rows else None
+        empty = c.Paragraph(text=f"No {title.lower()} yet.")
+        return shell(site, title, [c.Heading(text=title, level=2), *add, table or empty], member)
+
+    async def create(
+        form: Annotated[model_in, fastui_form(model_in)], token: Token
+    ) -> list[AnyComponent]:
+        async with api(token) as client:
+            resp = await client.post(path, json=form.model_dump(mode="json"))
+        if resp.status_code == 401:
+            return [c.FireEvent(event=GoToEvent(url="/login"))]
+        resp.raise_for_status()
+        return [c.FireEvent(event=GoToEvent(url=path, query={"added": resp.json()["id"]}))]
+
+    options = {"response_model": FastUI, "response_model_exclude_none": True}
+    app.add_api_route(f"/api{path}", page, methods=["GET"], **options)
+    app.add_api_route(f"/api{path}", create, methods=["POST"], **options)
+
+
+for _module in domain.modules():
+    add_entity_pages(_module)
 
 
 @app.get("/{path:path}")

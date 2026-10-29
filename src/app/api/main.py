@@ -10,6 +10,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import domain
 from app.agent import Deps, build_agent
 from app.api import auth
 from app.api.auth import CurrentMember
@@ -29,6 +30,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     if await repo.ping():
         await repo.ensure_schema()
     app.state.repo = repo
+    app.state.driver = driver  # app.domain modules store their entities through it
     app.state.agent = build_agent(settings.llm_model)
     yield
     if driver:
@@ -49,6 +51,8 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization"],
 )
 app.include_router(auth.router)
+for module in domain.modules():  # entities added with `uv run task new_entity`
+    app.include_router(module.router)
 
 
 def get_repo(request: Request) -> ItemStore:

@@ -9,6 +9,7 @@ dependencies = [
     "pydantic-settings>=2.11",
     "neo4j>=6.0",
     "httpx>=0.28",
+    "pyjwt>=2.10",  # sign-on tokens; app.domain modules use them and the UI reads those modules
 ]
 
 [project.optional-dependencies]
@@ -16,7 +17,6 @@ api = [
     "fastapi>=0.120",
     "uvicorn[standard]>=0.38",
     "pydantic-ai-slim>=1.0",
-    "pyjwt>=2.10",
 ]
 ui = [
     "fastapi>=0.120",
@@ -92,6 +92,7 @@ clean = { cmd = "rm -rf .venv .pytest_cache .ruff_cache .coverage coverage.xml h
 dev = { cmd = "python scripts/dev.py", help = "API + web UI with live reload, items in memory: no Docker, no Neo4j" }
 changelog = { cmd = "git-cliff -o CHANGELOG.md", help = "Regenerate CHANGELOG.md from the commit prefixes (cliff.toml)" }
 smoke = { cmd = "python scripts/template_smoke.py", help = "Copy the template, swap in the neutral brand, and check the gate passes with no trace of the old brand" }
+new_entity = { cmd = "python scripts/new_entity.py", help = "Add an entity to every layer, e.g. task new_entity Volunteer" }
 types = { cmd = "python -m app.typegen", help = "Regenerate the mobile app's TypeScript types from the Pydantic models" }
 sync = { cmd = "python scripts/sync_meta.py", help = "Copy the brand (brand/) into the files that cannot read it, and check it" }
 lint = { cmd = "ruff check . && ruff format --check .", help = "Ruff lint + format check" }

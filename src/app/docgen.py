@@ -48,14 +48,19 @@ def anchor(name: str) -> str:
 
 
 def documented_models() -> list[type[BaseModel]]:
-    """The Pydantic models defined in app.models, in source order."""
-    return [
+    """The Pydantic models defined in app.models, then in each app.domain module, in source
+    order."""
+    from app import domain
+
+    found = (
         obj
-        for obj in vars(models).values()
+        for module in [models, *domain.modules()]
+        for obj in vars(module).values()
         if isinstance(obj, type)
         and issubclass(obj, BaseModel)
-        and obj.__module__ == models.__name__
-    ]
+        and obj.__module__ == module.__name__
+    )
+    return list(dict.fromkeys(found))  # once each, though a module may alias one (MODEL)
 
 
 def model_link(name: str, page: str = "models.md") -> str:

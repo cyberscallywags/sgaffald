@@ -30,6 +30,10 @@ src/app/
 ## Adding pages
 
 - **A content page**: add it to `pages` in `brand/content/site.json`. No code change.
+- **An entity's page**: `uv run task new_entity <Name>` writes `pages/<plural>/`, adds its
+  route above the `// new_entity: routes` marker in `app.routes.ts` and its menu entry above
+  the marker in `features.ts`, and regenerates the types. `ApiService.list` and `create` reach
+  its API.
 - **A screen with behaviour**: create it under `pages/`, add its route in `app.routes.ts`
   and an entry in `features.ts`.
 

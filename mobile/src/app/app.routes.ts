@@ -22,6 +22,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/account/account.page').then((m) => m.AccountPage),
   },
+  // new_entity: routes (uv run task new_entity adds entity pages above this line)
   { path: '', redirectTo: 'welcome', pathMatch: 'full' },
   { path: '**', redirectTo: 'welcome' },
 ];

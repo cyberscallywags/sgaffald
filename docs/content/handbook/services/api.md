@@ -20,6 +20,14 @@ one takes a `CurrentMember` argument (or `dependencies=[Depends(current_member)]
 that only reads stays public. `require_role("admin")` limits a route to one role. See
 [Sign-on](../sign-on.md) for the modes, the demo members and the move to a real provider.
 
+## Entities
+
+Every module in `src/app/domain/` (one per entity added with `uv run task new_entity <Name>`)
+defines its models, its storage and a `router`, which the API includes: `GET /<plural>` lists
+them, and `POST /<plural>` adds one for the signed-in member. With no Neo4j driver
+(`STORAGE=memory`) a module stores its entities in memory. See
+[Make it yours](../make-it-yours.md#5-model-the-domain).
+
 ## Graph access
 
 `app.db.ItemRepo` wraps the async Neo4j driver. On start-up the API pings Neo4j and

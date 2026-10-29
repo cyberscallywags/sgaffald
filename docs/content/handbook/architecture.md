@@ -51,7 +51,8 @@ src/app/
   meta.py       reads brand/brand.toml for the services and docs
   models.py     the shared Pydantic contract
   config.py     Settings, from environment variables
-  db.py         Neo4j repository
+  db.py         item storage: Neo4j, or memory with STORAGE=memory
+  domain/       entities added with `uv run task new_entity`: models, storage, routes
   agent.py      Pydantic AI agent
   docgen.py     generates the docs reference pages from the code
 docs/
