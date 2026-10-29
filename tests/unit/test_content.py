@@ -3,9 +3,9 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from sgaffald.content import DEFAULT_SITE_FILE, load_site
-from sgaffald.meta import get_meta
-from sgaffald.models import Site
+from app.content import DEFAULT_SITE_FILE, load_site
+from app.meta import get_meta
+from app.models import Site
 
 
 def sample() -> dict:
@@ -58,8 +58,8 @@ def test_theme_colours_are_six_digit_hex(colour):
 
 
 def test_site_file_setting_overrides_sample(tmp_path, monkeypatch):
-    from sgaffald import content
-    from sgaffald.config import get_settings
+    from app import content
+    from app.config import get_settings
 
     data = sample()
     data["brand"]["name"] = "Prosiect"

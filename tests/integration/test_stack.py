@@ -100,7 +100,7 @@ def test_docs_serves_portal_and_manual():
 
 
 def test_docs_reference_is_generated_from_the_running_code():
-    # the image ran sgaffald.docgen: every API route is documented on both sites
+    # the image ran app.docgen: every API route is documented on both sites
     paths = httpx.get(f"{API}/openapi.json").json()["paths"]
     portal = httpx.get(f"{DOCS}/reference/http-api/").text
     manual = httpx.get(f"{DOCS}/manual/reference/http-api.html").text

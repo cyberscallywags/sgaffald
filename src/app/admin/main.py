@@ -5,9 +5,9 @@ import asyncio
 import httpx
 import streamlit as st
 
-from sgaffald.config import get_settings
-from sgaffald.db import make_driver
-from sgaffald.meta import get_meta
+from app.config import get_settings
+from app.db import make_driver
+from app.meta import get_meta
 
 settings = get_settings()
 title = f"{get_meta().name} admin"

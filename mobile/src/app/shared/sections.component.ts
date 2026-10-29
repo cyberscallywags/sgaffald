@@ -15,7 +15,7 @@ import {
 import { Section } from '../core/api.service';
 import { iconName } from '../core/icons';
 
-/** Renders manifest sections; the mobile twin of render_section in sgaffald/ui/main.py. */
+/** Renders manifest sections; the mobile twin of render_section in app/ui/main.py. */
 @Component({
   selector: 'app-sections',
   templateUrl: 'sections.component.html',

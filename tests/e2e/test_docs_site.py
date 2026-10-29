@@ -6,7 +6,7 @@ import os
 import pytest
 from playwright.sync_api import Page, expect
 
-from sgaffald.meta import get_meta
+from app.meta import get_meta
 
 pytestmark = pytest.mark.e2e
 

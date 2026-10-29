@@ -10,7 +10,7 @@ htmlcov/
 .env.production
 locust_*.csv
 
-# Docs: build output, Zensical cache, and the pages sgaffald.docgen generates
+# Docs: build output, Zensical cache, and the pages app.docgen generates
 docs/_build/
 docs/.cache/
 docs/content/reference/http-api.md

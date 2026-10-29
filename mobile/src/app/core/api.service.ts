@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
-/** Mirrors sgaffald.models: keep in step with the Pydantic contract. */
+/** Mirrors app.models: keep in step with the Pydantic contract. */
 export interface Item {
   id: string;
   name: string;

@@ -2,8 +2,8 @@
 
 from neo4j import AsyncDriver, AsyncGraphDatabase
 
-from sgaffald.config import Settings
-from sgaffald.models import Item, ItemIn
+from app.config import Settings
+from app.models import Item, ItemIn
 
 
 def make_driver(settings: Settings) -> AsyncDriver:

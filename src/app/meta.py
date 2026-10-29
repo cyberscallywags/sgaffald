@@ -1,10 +1,10 @@
 """Project identity from project.toml: name, organisation, repository, app id. The version comes
 from the installed package (pyproject.toml). Content (brand, theme, pages) is site.json's job;
-see sgaffald.content."""
+see app.content."""
 
 import tomllib
 from functools import lru_cache
-from importlib.metadata import version
+from importlib.metadata import packages_distributions, version
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -57,9 +57,16 @@ class Meta(BaseModel):
     mobile: Mobile
 
 
+def package_version() -> str:
+    """The installed distribution's version. The import package is always `app`; the
+    distribution is named after the slug, so look it up rather than assume the name."""
+    (dist, *_) = packages_distributions().get(__package__, [__package__])
+    return version(dist)
+
+
 def load_meta(path: Path) -> Meta:
     raw = tomllib.loads(path.read_text())
-    return Meta(**raw.pop("project"), **raw, version=version(__package__))
+    return Meta(**raw.pop("project"), **raw, version=package_version())
 
 
 @lru_cache

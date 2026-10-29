@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from sgaffald import docgen
-from sgaffald.api.main import app
-from sgaffald.config import Settings
-from sgaffald.meta import load_meta
+from app import docgen
+from app.api.main import app
+from app.config import Settings
+from app.meta import load_meta
 
 ROOT = Path(__file__).parents[2]
 DOCS = ROOT / "docs"
