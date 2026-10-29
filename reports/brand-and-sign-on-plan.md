@@ -24,10 +24,12 @@ This document merges two earlier drafts, `brand-kit-and-sign-on-proposal.md` (th
    a real identity provider later changes token verification and the sign-in screens, not the
    rest of the code.
 4. **To publish the template**:
-   - add a licence;
-   - ship a neutral default brand, with Cyber Scallywags as an example brand;
+   - add the MIT licence;
+   - keep Cyber Scallywags as the default brand under its own terms, and ship a neutral CC0
+     example brand that adopters start from;
+   - rename the Python package to a neutral `app`, so generated projects never rename it;
    - default to Neo4j Community instead of the Enterprise evaluation licence;
-   - replace the manual rename steps with a Copier template;
+   - replace the manual rename steps with a Copier template (phase 5);
    - add a CI job that generates a project from the template and tests it;
    - harden the supply chain (code scanning, SBOM, signed images).
 
@@ -94,9 +96,9 @@ description = "A full-stack starter: FastAPI, FastUI, Streamlit, Ionic and Neo4j
 year = 2026
 
 [organisation]
-name = "Sgaffald contributors"
-url = "https://github.com/cyberscallywags/sgaffald"
-motto = ""
+name = "Cyber Scallywags"
+url = "https://cyberscallywags.com"
+motto = "Play • Learn • Share • Grow"
 
 [repository]
 owner = "cyberscallywags"
@@ -132,11 +134,11 @@ mode = "mock"
 `site.json` keeps only content (`brand.tagline`, `welcome`, `about`, `pages`). `brand.name` and
 `brand.collective` keep their current defaults from `[project]` and `[organisation]`.
 
-**Trade-off of moving `[theme]`:** colours are needed at build time: the mobile first paint, both
-docs themes and the app icons. That makes them identity, not page content. The cost is that a
-runtime colour change becomes "mount a different `BRAND_DIR` and restart" instead of swapping
-`SITE_FILE`. Neither frontend changes, because `GET /site` still returns `theme`. See the open
-questions.
+**Trade-off of moving `[theme]` (decided: move it):** colours are needed at build time: the
+mobile first paint, both docs themes and the app icons. That makes them identity, not page
+content. The cost is that a runtime colour change becomes "mount a different `BRAND_DIR` and
+restart" instead of swapping `SITE_FILE`. Neither frontend changes, because `GET /site` still
+returns `theme`.
 
 ### 2.2 What `task sync` gains
 
@@ -186,12 +188,32 @@ questions.
   `get_meta()`, so a renamed project needs no test edits.
 
 **Changes:**
-- New `brand/`; `project.toml` → `brand/brand.toml`; `site.json` moved.
+- New `brand/` (the Cyber Scallywags brand) and `examples/brands/neutral/`;
+  `project.toml` → `brand/brand.toml`; `site.json` moved.
 - Code: `meta.py`, `content/__init__.py`, `config.py` (`BRAND_DIR`), `sync_meta.py` (with tests
   in `test_sync.py`), `ui/main.py`.
 - Docs config: `zensical.toml`, `sphinx/conf.py`, the three docs stylesheets.
 - `pyproject.toml` force-include; the two docs tests.
 - `README.md` steps 2, 4 and 7 collapse into one.
+
+### 2.4 Package rename: `sgaffald` → `app`
+
+Decided: the Python package becomes `app`, renamed once in the template, so a generated project
+never runs the `git mv` + `perl -pi` step (README step 5 disappears). Identity already comes from
+`brand.toml`, so nothing user-visible changes. The distribution name in `pyproject.toml`
+(`[project] name`) is written from `brand.toml`'s `slug` by `task sync`, so the wheel and lock
+file still carry the project's name.
+
+This touches:
+- `src/sgaffald/` → `src/app/` and every `sgaffald.` import;
+- `pyproject.toml`: the `app[...]` extras, `force-include`, `--cov=app`, the coverage `omit`,
+  and the `python -m app.docgen` task;
+- `docker/entrypoint.sh` and the three Dockerfiles;
+- `docs/sphinx/conf.py` (autodoc) and the Python API reference pages;
+- the `.env.test` paths, if any, and the tests.
+
+Do this first, as its own PR (`refactor/package-app`), because it rewrites paths that every later
+phase edits. Paths elsewhere in this document still use today's `src/sgaffald/` names.
 
 ## 3. Template handbook vs project docs
 
@@ -331,9 +353,9 @@ sequenceDiagram
 
 - **`/login` page**: a `ModelForm(LoginIn)` plus one-click buttons for each demo user. The UI
   server posts to the API, sets an `HttpOnly`, `SameSite=Lax` cookie holding the token, and
-  redirects to the page the user came from. A cookie survives a reload and scripts can't read it.
-  The alternative is FastUI's built-in `AuthEvent`, which keeps the token in `sessionStorage` (the
-  installed FastUI is 0.9.0). It needs less code, but the token is lost per tab.
+  redirects to the page the user came from. Decided over FastUI's built-in `AuthEvent`
+  (`sessionStorage`, installed FastUI 0.9.0): the cookie survives a reload and scripts can't
+  read it.
 - **Forwarding**: `api()` reads the request's cookie and adds the Bearer header, so every API
   call the UI makes is made as the signed-in member.
 - **Account menu**: signed out, the navbar's end links show **Sign in**. Signed in, they show
@@ -402,16 +424,18 @@ Ordered by how much each one matters for publishing.
 
 ### 5.1 Before publishing
 
-1. **Licence.** There is no `LICENSE` file, so legally nobody else may use the code. Use
-   Apache-2.0 (includes a patent grant) or MIT for the code. **Brand assets need their own
-   terms**: the Cyber Scallywags crest and name should not fall under the code licence by
-   accident, so add a `brand/LICENSE` or `TRADEMARKS.md` stating they are not covered. Ship the
-   neutral default artwork under CC0.
-2. **Neutral default brand.** Ship a plain "Sgaffald" brand (simple SVG mark, neutral palette,
-   generic home and about pages) and move the Cyber Scallywags look to
-   `examples/brands/cyber-scallywags/`. This shows how re-branding works, and adopters do not
-   start from another organisation's identity. `BRAND_DIR=examples/brands/cyber-scallywags`
-   switches between them.
+1. **Licence: MIT.** There is no `LICENSE` file, so legally nobody else may use the code. Add an
+   MIT `LICENSE` at the root ("Copyright (c) 2026 Cyber Scallywags"). **Brand assets need their
+   own terms**: the Cyber Scallywags crest and name must not fall under MIT by accident, so add
+   `brand/LICENSE` (all rights reserved) and a `TRADEMARKS.md` stating they are not covered.
+2. **Cyber Scallywags stays the default brand; a neutral example ships alongside it.**
+   `brand/` keeps the Cyber Scallywags look, and `examples/brands/neutral/` is a plain brand
+   (simple SVG mark, neutral palette, generic home and about pages) under CC0.
+   `BRAND_DIR=examples/brands/neutral` switches between them.
+   - **Consequence:** an adopter who copies the template gets artwork they may not reuse. So the
+     first step of `handbook/make-it-yours.md`, and later the Copier template, is "replace
+     `brand/` with `examples/brands/neutral/` (or your own)". The CI smoke test (item 8) proves
+     that this swap leaves no Cyber Scallywags references behind.
 3. **Neo4j licence default.** Compose defaults to `neo4j:…-enterprise` with
    `NEO4J_ACCEPT_LICENSE_AGREEMENT=eval` (`docker-compose.yml` line 26). Everyone who runs
    `task up` therefore accepts Neo4j's evaluation terms, often without noticing. Default to Neo4j
@@ -430,13 +454,15 @@ Ordered by how much each one matters for publishing.
 
 ### 5.2 Make starting a project a single command
 
-6. **Copier instead of manual renaming.** README steps 1–5 become questions in a `copier.yml`:
-   create the repo, set the identity, reset the version, set the brand, and rename the package
-   (currently done with `perl -pi`).
+6. **Copier instead of manual renaming (phase 5).** Until then, the documented route is GitHub's
+   "Use this template", swapping in a brand folder, and `task sync`. With the package already
+   called `app` (section 2.4), README steps 1–4 become questions in a `copier.yml`: create the
+   repo, set the identity, reset the version and set the brand. The brand question defaults to
+   the neutral example.
 
    ```bash
    uvx copier copy gh:cyberscallywags/sgaffald data-volunteer-network
-   # project name? slug? package name? organisation? primary colour? include mobile? admin? AI?
+   # project name? slug? organisation? brand (neutral)? primary colour? include mobile? admin? AI?
    ```
 
    Copier writes `.copier-answers.yml`. Later, `uvx copier update` applies template fixes as a
@@ -445,10 +471,12 @@ Ordered by how much each one matters for publishing.
    conflicts. `task sync` stays the tool for changes after generation.
 7. **Optional services.** Copier questions (or compose profiles) to leave out the mobile app,
    admin, the AI agent or the docs image. Many adopters want only API + web + graph.
-8. **A template smoke test in CI**: generate a project with deliberately different answers (new
-   name, package, colours, the example brand). Then run `task lint`, `task test` and
-   `sync --check` in it, and `git grep -i sgaffald` to catch leftovers. This proves the "make it
-   yours" promise on every PR. Today nothing tests it.
+8. **A template smoke test in CI**: create a project with deliberately different values (new
+   name, slug, colours, the neutral example brand). Then run `task lint`, `task test` and
+   `sync --check` in it, and `git grep -i -e sgaffald -e scallywag` to catch leftovers. This
+   proves the "make it yours" promise on every PR. Today nothing tests it. It lands in phase 4
+   as a script that copies the repository, replaces `brand/` with `examples/brands/neutral/` and
+   edits `brand.toml`; in phase 5 it switches to `copier copy`.
 9. **Version the template itself.** Tag template releases (SemVer) with upgrade notes in
    `handbook/upgrade.md`. Copier records the version a project was generated from, so
    `copier update --vcs-ref vX.Y.Z` can move one release at a time.
@@ -500,32 +528,29 @@ Ordered by how much each one matters for publishing.
 
 | Phase | PRs (branch) | Done when |
 |---|---|---|
-| 1. Brand kit | `refactor/brand-kit`: `brand/` + `brand.toml` + sync images, tokens, docs pages, validation | Changing only `brand/` re-brands the README, both docs sites, web UI and mobile. `sync --check` catches a stale image. `git grep -il scallywag` outside `brand/` and `examples/` is empty. |
+| 0. Package rename | `refactor/package-app`: `src/sgaffald` → `src/app`, imports, `pyproject.toml`, Docker, Sphinx | `task verify` passes. `git grep -w sgaffald -- '*.py' '*.sh' '*.toml'` finds only the slug in `project.toml`. |
+| 1. Brand kit | `refactor/brand-kit`: `brand/` (Cyber Scallywags) + `examples/brands/neutral/` + `brand.toml` + sync images, tokens, docs pages, validation | Changing only `brand/` re-brands the README, both docs sites, web UI and mobile. `BRAND_DIR=examples/brands/neutral` renders every surface in the neutral brand. `sync --check` catches a stale image. `git grep -il scallywag` outside `brand/` and `examples/` is empty. |
 | 2. Docs split | `docs/handbook-split`: move pages, nav + toctrees, placeholders, `include_handbook`, new handbook pages | Strict docs builds pass. No project page lives under `handbook/`. With `include_handbook = false`, both sites build without it. |
 | 3. Mock sign-on | `feature/mock-sign-on-api`, `feature/mock-sign-on-frontends` | Signed out, `POST /items` returns 401 and the forms prompt for sign-in on both frontends. E2E tests sign in, use the account menu (modal on web, popover on mobile), add an item and sign out. The API refuses mock auth in production. |
-| 4. Open source | `task/open-source-readiness`: licence + community files, neutral brand + example brand, Neo4j Community default, Dependabot, CodeQL, Scorecard, SBOM + cosign, commit-msg hook, changelog | The GitHub community profile is complete. `task up` runs without accepting the Enterprise evaluation licence. Release images verify with `cosign verify`. |
+| 4. Open source | `task/open-source-readiness`: MIT `LICENSE`, `brand/LICENSE` + `TRADEMARKS.md`, community files, Neo4j Community default, template smoke test (copy-and-swap script), Dependabot, CodeQL, Scorecard, SBOM + cosign, commit-msg hook, changelog | The GitHub community profile is complete. `task up` runs without accepting the Enterprise evaluation licence. The smoke test passes with the neutral brand. Release images verify with `cosign verify`. |
 | 5. Adoption tooling | `feature/copier-template`, `feature/generated-api-types`, `feature/new-entity-scaffold` | A project generated with Copier passes `task verify` in CI. A changed Pydantic model fails `sync --check` until the TS types are regenerated. `new_entity` produces a passing, working entity. |
 
-Phases 1 and 2 are independent and could run in parallel. Phase 3 depends on phase 1 only for
+Phase 0 goes first because it rewrites paths every later phase edits. After it, phases 1 and 2
+are independent and could run in parallel. Phase 3 depends on phase 1 only for
 `users.json`'s location. The Copier template in phase 5 is easiest once the brand kit exists,
 because most of its questions map one-to-one onto `brand.toml` fields. The dependency-group split
 (item 14) can land at any point.
 
-## Open questions
+## Decisions
 
-- **Licence**: Apache-2.0 or MIT for the code, and which terms for the Cyber Scallywags brand
-  assets?
-- **Default brand**: neutral "Sgaffald", or keep Cyber Scallywags as the default and add a
-  neutral example?
-- **Theme location**: is moving `theme` from `site.json` into `brand.toml` acceptable, given that
-  a runtime colour change then needs a restart with a mounted `BRAND_DIR`?
-- **Mock passwords**: one shared demo password (proposed), or click-to-sign-in personas with no
-  password at all? The password field makes the screens look like a real sign-in; personas are
-  quicker for demos. The proposal offers both on the same page.
-- **Web UI token storage**: `HttpOnly` cookie (proposed) or FastUI's `AuthEvent` with
-  `sessionStorage` (less code)?
-- **Copier**: adopt it as the main path, or keep "Use this template" plus `task sync` and add
-  Copier later?
-- **Python package name**: keep `sgaffald`, which is fine because identity no longer depends on
-  it, or rename it to something neutral such as `app` so generated projects never need to rename
-  it? With Copier asking for the package name, this matters less.
+Recorded 29 October 2026.
+
+| Question | Decision | Where it applies |
+|---|---|---|
+| Licence | **MIT** for the code; Cyber Scallywags assets all rights reserved (`brand/LICENSE`, `TRADEMARKS.md`) | §5.1 item 1 |
+| Default brand | **Cyber Scallywags stays the default** in `brand/`; a neutral CC0 brand ships in `examples/brands/neutral/` | §2, §5.1 item 2 |
+| Theme location | **Move `theme` into `brand.toml`**; runtime colour changes need a restart with a mounted `BRAND_DIR` | §2.1 |
+| Demo sign-in | **Both on one page**: email + one shared demo password, plus "Sign in as…" persona buttons | §4.3–4.5 |
+| Web UI token storage | **`HttpOnly`, `SameSite=Lax` cookie** set by the UI server | §4.4 |
+| Copier | **Later (phase 5)**; until then "Use this template" + brand swap + `task sync` | §5.2 items 6 and 8 |
+| Python package name | **Rename to `app`** once in the template (phase 0) | §2.4 |
