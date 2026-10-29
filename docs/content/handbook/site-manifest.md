@@ -1,7 +1,7 @@
 # Site manifest
 
 One JSON document, `brand/content/site.json`, holds the tagline and the pages. The API adds
-the theme colours from `brand/brand.toml`, validates the result against the [Site](reference/models.md#site) model and serves it
+the theme colours from `brand/brand.toml`, validates the result against the [Site](../reference/models.md#site) model and serves it
 at `GET /site`. The web UI and the mobile app both render from it, so they share one look
 and the same pages without either being redeployed.
 
@@ -22,7 +22,7 @@ A `theme` left in `site.json` is an error.
 The manifest holds content, which changes often. The project's identity (name, organisation,
 repository, app id) and its look (theme, images) live in `brand/brand.toml` and change when
 the project is created or re-branded; the version lives in `pyproject.toml`. See
-[Brand kit](guides/brand-kit.md).
+[Brand kit](brand-kit.md).
 
 | File | Owns | Read when |
 |---|---|---|
@@ -33,7 +33,7 @@ the project is created or re-branded; the version lives in `pyproject.toml`. See
 Some consumers cannot read either file at run time: the docs sites, the mobile app's first
 paint and SCSS defaults, the compose variables, the web UI's static images and the README. `uv run task sync`
 copies the values there, and a unit test fails if any copy is stale. See
-[Project metadata](reference/project-metadata.md) for the current values.
+[Project metadata](../reference/project-metadata.md) for the current values.
 
 ## Pages and sections
 
@@ -69,4 +69,4 @@ Each page is a list of sections. Four kinds cover most needs:
 
 Point `BRAND_DIR` at another brand folder to change the identity, theme and content without
 rebuilding anything.
-The full bundled file is in [Sample site manifest](reference/site-sample.md).
+The full bundled file is in [Sample site manifest](../reference/site-sample.md).

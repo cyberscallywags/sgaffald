@@ -90,7 +90,7 @@ that touches more than one service:
 | before a pull request | `uv run task hooks` | every hook on every file, as CI runs it |
 | | `uv run task verify` | the whole CI gate locally, stack included |
 
-Every task is listed in [Tasks](../reference/tasks.md), and [Testing](testing.md) explains what
+Every task is listed in [Tasks](../../reference/tasks.md), and [Testing](testing.md) explains what
 each test layer proves.
 
 ## 5. Pull request
@@ -104,7 +104,10 @@ A pull request is ready to merge when:
 
 - it meets the issue's acceptance criteria or definition of done;
 - tests are added or updated, and `ci-passed` is green;
-- the docs under `docs/content` match the change;
+- the docs match the change: the project's pages in `docs/content/project/`, the template's in
+  `docs/content/handbook/` (see [The docs site](../services/docs.md#adding-a-page));
+- a [decision record](../decisions/index.md) is added if the change alters how the template is
+  structured, built or used;
 - `uv run task sync` has been run if anything in `brand/` changed.
 
 Merge with a merge commit, then delete the branch.

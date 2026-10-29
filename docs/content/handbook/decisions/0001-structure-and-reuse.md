@@ -1,5 +1,8 @@
 # Application structure, storage and reuse review
 
+Status: **accepted**, partly carried out. Recorded 23 October 2026, before the package was
+renamed to `app` and the brand moved to `brand/`; paths below are as they were then.
+
 Reviewed: 23 October 2026. Scope: the local Sgaffald application, Docker builds, documentation, dependency manifests and CI workflows.
 
 ## Recommendation
@@ -55,7 +58,7 @@ Examples of Python environment contributors include Playwright (~138 MiB), PyArr
 
 Suggested additions to `.gitignore`:
 
-```gitignore
+```text
 # Local mobile dependencies, cache and generated web bundle
 src/sgaffald/mobile/node_modules/
 src/sgaffald/mobile/.angular/

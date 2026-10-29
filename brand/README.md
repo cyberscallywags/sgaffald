@@ -4,7 +4,7 @@ Everything that makes this project *this* project. The rest of the repository is
 and never names the brand. To re-brand, edit this folder (or replace it with
 `examples/brands/neutral/`) and run `uv run task sync`; `uv run task test` fails until every
 copy is current. The full reference is the brand kit page of the docs
-(`docs/content/guides/brand-kit.md`).
+(`docs/content/handbook/brand-kit.md`).
 
 | File | What it holds | Read by |
 |---|---|---|

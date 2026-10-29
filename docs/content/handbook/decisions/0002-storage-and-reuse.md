@@ -1,5 +1,8 @@
 # Sgaffald: storage and reuse review
 
+Status: **accepted**, partly carried out (the dependency-group split is still open).
+Recorded 23 October 2026; paths below are as they were then.
+
 Reviewed 2026-10-23. Scope: the whole working tree at `~/Desktop/sgaffald`. I only looked; nothing
 in the project was changed.
 
@@ -53,7 +56,7 @@ When archiving or sharing the template, use `git archive` (see R1) rather than z
 **S2. Split the `dev` dependency group.** Most day-to-day work (lint, unit tests, docs) does not
 need a browser driver or a load-test tool. Install them only when needed:
 
-```toml
+```text
 [dependency-groups]
 dev  = ["sgaffald[api,ui,admin]", "pytest>=8.4", "pytest-asyncio>=1.2", "pytest-cov>=7.0",
         "ruff>=0.14", "pre-commit>=4.3", "taskipy>=1.14", "watchfiles>=1.1"]

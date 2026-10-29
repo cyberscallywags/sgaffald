@@ -1,6 +1,6 @@
+% sync:brand
 # Sgaffald reference manual
 
-% sync:brand
 ```{image} assets/brand/crest.webp
 :alt: The Cyber Scallywags crest: a wolf in a flat cap above the words Play, Learn, Share, Grow
 :class: brand-crest brand-crest--float
@@ -10,21 +10,30 @@
 Cyber Scallywags · Reference manual
 % /sync:brand
 
-The Sphinx edition of the Sgaffald docs: the same pages as the [portal](/), plus the
+The Sphinx edition of these docs: the same pages as the [portal](/), plus the
 [Python API](reference/python-api-sphinx.md) generated from docstrings.
 
+```{toctree}
+:caption: Project
+:maxdepth: 1
+
+project/overview
+```
+
+% The handbook's cards and toctrees are generated from HANDBOOK in scripts/sync_meta.py.
+% sync:handbook
 ::::{grid} 1 2 2 3
 :gutter: 3
 
 :::{grid-item-card} Get started
-:link: getting-started
+:link: handbook/getting-started
 :link-type: doc
 
 Install the tools, start the stack, find every service.
 :::
 
 :::{grid-item-card} Architecture
-:link: architecture
+:link: handbook/architecture
 :link-type: doc
 
 How every service fits together.
@@ -39,36 +48,50 @@ Endpoints, bodies and `curl`, generated from the code.
 ::::
 
 ```{toctree}
-:caption: Guide
+:caption: Handbook
 :maxdepth: 2
 
-getting-started
-architecture
-site-manifest
-guides/make-it-yours
-guides/brand-kit
+handbook/index
+handbook/getting-started
+handbook/architecture
+handbook/site-manifest
+handbook/brand-kit
+handbook/make-it-yours
+handbook/upgrade
+handbook/from-scratch
 ```
 
 ```{toctree}
 :caption: Services
 :maxdepth: 1
 
-services/api
-services/web-ui
-services/admin
-services/mobile
-services/docs
+handbook/services/api
+handbook/services/web-ui
+handbook/services/admin
+handbook/services/mobile
+handbook/services/docs
 ```
 
 ```{toctree}
 :caption: Development
 :maxdepth: 1
 
-development/ways-of-working
-development/testing
-development/environments
-development/ci-cd
+handbook/development/ways-of-working
+handbook/development/testing
+handbook/development/environments
+handbook/development/ci-cd
 ```
+
+```{toctree}
+:caption: Decisions
+:maxdepth: 1
+
+handbook/decisions/index
+handbook/decisions/0001-structure-and-reuse
+handbook/decisions/0002-storage-and-reuse
+handbook/decisions/0003-brand-kit-and-sign-on
+```
+% /sync:handbook
 
 ```{toctree}
 :caption: Reference
@@ -84,7 +107,7 @@ reference/python-api-sphinx
 ```
 
 ```{toctree}
-:caption: Community
+:caption: About
 :maxdepth: 1
 
 about

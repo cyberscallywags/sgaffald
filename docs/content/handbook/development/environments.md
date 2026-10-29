@@ -1,7 +1,7 @@
 # Environments
 
 Docker compose reads two env files: `.env.project`, then one per environment. Every variable
-is listed, with its values, in [Configuration](../reference/configuration.md).
+is listed, with its values, in [Configuration](../../reference/configuration.md).
 
 ## Project
 

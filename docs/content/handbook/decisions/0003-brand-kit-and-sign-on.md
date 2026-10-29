@@ -1,5 +1,8 @@
 # Brand kit, template handbook and mock sign-on: proposal
 
+Status: **accepted**, being carried out in phases (see the table at the end). Recorded
+29 October 2026; it replaced two earlier drafts, which remain in the git history.
+
 Written: 29 October 2026. Scope: how Sgaffald is re-branded for a new project, how its
 documentation is organised, a simulated sign-on across API, web UI and mobile, and what it would
 take to publish the template as an open-source project. Nothing here is implemented yet; each

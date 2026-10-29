@@ -15,7 +15,7 @@ hide:
 
 Say what the project does and who it is for. This page comes from `brand/docs/home.md`.
 
-[Get started](getting-started.md){ .md-button .md-button--primary }
+[Get started](handbook/getting-started.md){ .md-button .md-button--primary }
 [Reference manual](/manual/){ .md-button }
 
 </div>
@@ -30,7 +30,7 @@ Say what the project does and who it is for. This page comes from `brand/docs/ho
 
     Install the tools, start the stack and find every service.
 
-    [Getting started →](getting-started.md)
+    [Getting started →](handbook/getting-started.md)
 
 -   **Architecture**
 
@@ -38,7 +38,7 @@ Say what the project does and who it is for. This page comes from `brand/docs/ho
 
     How the API, UI, admin, mobile app and Neo4j fit together.
 
-    [Architecture →](architecture.md)
+    [Architecture →](handbook/architecture.md)
 
 -   **HTTP API**
 

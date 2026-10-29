@@ -18,7 +18,7 @@ brand/
 ```
 
 `examples/brands/neutral/` is a complete, neutral brand under CC0. Copy it over `brand/` to
-start a project that is not Cyber Scallywags:
+start a project of your own, since the default brand's artwork is not licensed for reuse:
 
 ```bash
 rm -r brand && cp -r examples/brands/neutral brand

@@ -356,8 +356,8 @@ def project_metadata_page(root: Path) -> str:
             GENERATED,
             "The project's identity and theme, from `brand/brand.toml` (read by `app.meta`), "
             "and its version, from `pyproject.toml`. Images, the docs palette and the brand's "
-            "docs pages are described in the [brand kit](../guides/brand-kit.md); pages and "
-            "copy are the [site manifest](../site-manifest.md)'s job.\n\n",
+            "docs pages are described in the [brand kit](../handbook/brand-kit.md); pages and "
+            "copy are the [site manifest](../handbook/site-manifest.md)'s job.\n\n",
             table(["Key", "Value", "Used for"], rows),
             "\n## Generated copies\n\n"
             "The Python services and the Sphinx manual read `brand.toml` directly. These files "
