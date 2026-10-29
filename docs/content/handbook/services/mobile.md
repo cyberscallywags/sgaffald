@@ -9,7 +9,7 @@ Capacitor 8. It talks to the API only, through `ApiService`
 ```text
 src/app/
   app.component.*        shell: split pane + side menu (sign-on, pages, About, Docs)
-  app.routes.ts          welcome, about, p/:slug, items, sign-in
+  app.routes.ts          welcome, about, p/:slug, items, sign-in, account
   features.ts            code-backed screens listed after the manifest pages
   core/
     api.service.ts       HTTP to the API; types mirror models.py
@@ -32,9 +32,17 @@ src/app/
 
 ## Sign-on
 
-`SessionService` remembers who is using the device so the menu can greet them. It is not
-authentication and the API does not check it. Replace `signIn` and `signOut` with your
-identity provider and send its token from `ApiService`.
+| Piece | Does |
+|---|---|
+| `pages/sign-in/` | Email and password, a "Demo members" list that fills in the email, and a return to `?returnUrl=` (inside the app only) |
+| `core/session.service.ts` | `signIn` calls `POST /api/auth/login`; `member` and `token` signals; an expired session reads as signed out |
+| `SESSION_STORE` | Where the session is kept: `localStorage` now; provide `@capacitor/preferences` or secure storage for native builds |
+| `core/auth.interceptor.ts` | Sends `Authorization: Bearer` to the API only; a 401 signs out and goes to sign-in |
+| `core/auth.guard.ts` | Keeps signed-out visitors off member-only routes, such as `/account` |
+| `shared/account-menu.component.ts` | The toolbar's initials button and its popover: who is signed in, Account, Sign out |
+
+The side menu shows the member's name, email and role. The items page shows its form only to
+members. With sign-on off, none of the sign-on screens show. See [Sign-on](../sign-on.md).
 
 ## Building and running
 

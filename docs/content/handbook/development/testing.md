@@ -23,12 +23,15 @@ Every layer is tested, from pure functions to a real phone browser against the f
   is current. Assertions read names and colours from `app.meta` and the manifest, never
   literals, so a renamed fork's tests still pass. Without the `e2e` group, pytest skips
   collecting `tests/e2e`.
-- **Mobile unit**: services, the theme maths, the side menu, the content and sign-in pages
+- **Mobile unit**: services, the theme maths, the side menu, the content and sign-in pages,
+  the auth interceptor and guard, and the account menu
   (Vitest, mocked HTTP). Runs inside the image build, so a failing spec fails the build.
 - **Integration**: every container against every other, including writes reaching Neo4j,
   the mobile nginx proxy, CORS for native origins, and the docs container serving both sites.
 - **Browser**: the FastUI form flow, the admin portal and the mobile app on an emulated
-  Pixel 7, reading Neo4j directly so the app cannot fake persistence. The docs are checked at
+  Pixel 7, reading Neo4j directly so the app cannot fake persistence. Each signs in as a demo
+  member the way a person would (`tests/e2e/conftest.py`), and checks the signed-out, wrong
+  password and sign-out paths; the admin portal turns away members who are not admins. The docs are checked at
   phone and desktop widths: no sideways scrolling, every image inside the screen, dark first.
 - **Load**: a 20-second Locust smoke against the API.
 
