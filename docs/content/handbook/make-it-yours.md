@@ -76,10 +76,12 @@ Replace the sample `Item` with your own models, for example `Volunteer` and `Opp
 - `api/main.py`: the `/items` routes
 - `admin/main.py`
 - `ui/main.py`
-- `mobile/src/app/core/api.service.ts`, `mobile/src/app/pages/items/` and
+- `mobile/src/app/core/api.service.ts` (its methods), `mobile/src/app/pages/items/` and
   `mobile/src/app/features.ts`
 
-The tests show the pattern for each layer.
+Run `uv run task types` after changing the models: it regenerates the mobile app's types
+(`api.types.ts`), and the pre-commit hook refuses a stale copy. The tests show the pattern for
+each layer.
 
 ## 6. Environments
 

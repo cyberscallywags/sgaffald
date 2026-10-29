@@ -23,6 +23,12 @@ repos:
         language: python
         pass_filenames: false
         always_run: true
+      - id: api-types
+        name: mobile TypeScript types match the models (fix with uv run task types)
+        entry: uv run --quiet python -m app.typegen --check
+        language: system
+        pass_filenames: false
+        files: ^src/app/(models|typegen)\.py$|^mobile/src/app/core/api\.types\.ts$
       - id: branch-name
         name: branch name is feature/, bug/, task/, docs/ or refactor/
         entry: bash -c 'scripts/check_branch_name.sh "$PRE_COMMIT_REMOTE_BRANCH"'
