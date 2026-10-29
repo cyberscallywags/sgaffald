@@ -1,6 +1,6 @@
 # Install once: uv run pre-commit install    Run all: uv run task hooks
 # Bump versions: uv run pre-commit autoupdate
-default_install_hook_types: [pre-commit, pre-push]  # pre-push: the branch-name check
+default_install_hook_types: [pre-commit, commit-msg, pre-push]  # commit-msg: the prefix; pre-push: the branch name
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -30,6 +30,11 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+      - id: commit-msg
+        name: "commit message starts with ADDED:, FIXED:, TASK:, DOCS: or REFACTOR:"
+        entry: scripts/check_commit_msg.sh
+        language: script
+        stages: [commit-msg]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.1
