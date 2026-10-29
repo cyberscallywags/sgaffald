@@ -31,6 +31,16 @@ export class ApiService {
     return this.http.post<Item>(`${this.base}/items`, { name });
   }
 
+  /** GET an entity's list, e.g. `/volunteers`, for pages added with `uv run task new_entity`. */
+  list<T>(path: string): Observable<T[]> {
+    return this.http.get<T[]>(`${this.base}${path}`);
+  }
+
+  /** POST a new entity to its list path. */
+  create<T>(path: string, body: unknown): Observable<T> {
+    return this.http.post<T>(`${this.base}${path}`, body);
+  }
+
   login(email: string, password: string): Observable<Session> {
     return this.http.post<Session>(`${this.base}/auth/login`, { email, password });
   }

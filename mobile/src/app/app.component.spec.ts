@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ApiService } from './core/api.service';
 import { SessionService } from './core/session.service';
+import { FEATURES } from './features';
 import { SITE, session } from './testing/site.fixture';
 
 function setup() {
@@ -25,7 +26,7 @@ describe('AppComponent', () => {
     expect(fixture.componentInstance.nav().map((e) => e.path)).toEqual([
       '/welcome',
       '/p/roadmap',
-      '/items',
+      ...FEATURES.map((f) => f.path), // Items, then any entity added with task new_entity
     ]);
     const menu: HTMLElement = fixture.nativeElement.querySelector('[data-testid="menu"]');
     expect(menu.textContent).toContain('Roadmap');

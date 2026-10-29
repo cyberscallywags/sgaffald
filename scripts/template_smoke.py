@@ -1,6 +1,6 @@
 """Prove the "make it yours" promise: copy the template and make it a new project with
-scripts/new_project.py (what `copier copy` runs), then check that the gate passes and that
-nothing still names the old brand.
+scripts/new_project.py (what `copier copy` runs), add an entity with scripts/new_entity.py,
+then check that the gate passes and that nothing still names the old brand.
 
     uv run task smoke            # in a temporary copy; the working tree is not touched
 
@@ -84,6 +84,8 @@ def main(argv: list[str] | None = None) -> int:
         # a new project is a git repository; some tests list its files with git
         run("git", "init", "--quiet", cwd=project)
         run("git", "add", "--all", cwd=project)
+        # and grows its own domain: the scaffold's code must pass the same gate
+        run("uv", "run", "--quiet", "python", "scripts/new_entity.py", "Volunteer", cwd=project)
         run("uv", "run", "--quiet", "task", "lint", cwd=project)
         run("uv", "run", "--quiet", "task", "test", "-q", "--no-cov", cwd=project)
         run(sys.executable, "scripts/sync_meta.py", "--check", cwd=project)
