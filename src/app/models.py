@@ -22,10 +22,11 @@ class Item(ItemIn):
 
 
 class Health(BaseModel):
-    """API status and whether Neo4j is reachable."""
+    """API status, where items are stored, and whether Neo4j is reachable."""
 
     status: str
     env: str
+    storage: Literal["neo4j", "memory"] = "neo4j"
     neo4j: bool
 
 

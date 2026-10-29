@@ -27,7 +27,7 @@ async def client(fake_repo):
 async def test_health_ok(client):
     r = await client.get("/health")
     assert r.status_code == 200
-    assert r.json() == {"status": "ok", "env": "test", "neo4j": True}
+    assert r.json() == {"status": "ok", "env": "test", "storage": "neo4j", "neo4j": True}
 
 
 async def test_health_degraded(client, fake_repo):
@@ -82,3 +82,23 @@ async def test_site_carries_the_docs_url_from_settings(client, monkeypatch):
     assert (await client.get("/site")).json()["docs_url"] == "http://localhost:8200"
     monkeypatch.setattr(get_settings(), "docs_url", "")
     assert (await client.get("/site")).json()["docs_url"] is None
+
+
+def test_memory_storage_runs_the_whole_api_without_neo4j(monkeypatch):
+    # TestClient runs the lifespan, which would connect to Neo4j with STORAGE=neo4j.
+    from fastapi.testclient import TestClient
+
+    monkeypatch.setattr(get_settings(), "storage", "memory")
+    with TestClient(app) as c:
+        assert c.get("/health").json() == {
+            "status": "ok",
+            "env": "test",
+            "storage": "memory",
+            "neo4j": False,
+        }
+        member = demo_members()[0]
+        password = get_settings().auth_demo_password.get_secret_value()
+        token = c.post("/auth/login", json={"email": member.email, "password": password})
+        headers = {"Authorization": f"Bearer {token.json()['token']}"}
+        assert c.post("/items", json={"name": "Cof"}, headers=headers).status_code == 201
+        assert [i["name"] for i in c.get("/items").json()] == ["Cof"]

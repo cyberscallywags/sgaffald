@@ -15,7 +15,7 @@ from app.api import auth
 from app.api.auth import CurrentMember
 from app.config import get_settings
 from app.content import get_site
-from app.db import ItemRepo, make_driver
+from app.db import ItemRepo, ItemStore, MemoryItemRepo, make_driver
 from app.meta import get_meta
 from app.models import AskIn, AskOut, Health, Item, ItemIn, Site
 
@@ -24,14 +24,15 @@ from app.models import AskIn, AskOut, Health, Item, ItemIn, Site
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
     auth.check_settings(settings)
-    driver = make_driver(settings)
-    repo = ItemRepo(driver, settings.neo4j_database)
+    driver = make_driver(settings) if settings.storage == "neo4j" else None
+    repo: ItemStore = ItemRepo(driver, settings.neo4j_database) if driver else MemoryItemRepo()
     if await repo.ping():
         await repo.ensure_schema()
     app.state.repo = repo
     app.state.agent = build_agent(settings.llm_model)
     yield
-    await driver.close()
+    if driver:
+        await driver.close()
 
 
 meta = get_meta()
@@ -50,18 +51,25 @@ app.add_middleware(
 app.include_router(auth.router)
 
 
-def get_repo(request: Request) -> ItemRepo:
+def get_repo(request: Request) -> ItemStore:
     return request.app.state.repo
 
 
-Repo = Annotated[ItemRepo, Depends(get_repo)]
+Repo = Annotated[ItemStore, Depends(get_repo)]
 
 
 @app.get("/health", response_model=Health, tags=["system"])
 async def health(repo: Repo) -> Health:
-    """Liveness plus Neo4j reachability. `degraded` means the API is up but the graph is not."""
+    """Liveness, where items are stored, and Neo4j reachability. `degraded` means the API is up
+    but its storage is not."""
     ok = await repo.ping()
-    return Health(status="ok" if ok else "degraded", env=get_settings().app_env, neo4j=ok)
+    storage = get_settings().storage
+    return Health(
+        status="ok" if ok else "degraded",
+        env=get_settings().app_env,
+        storage=storage,
+        neo4j=ok and storage == "neo4j",
+    )
 
 
 @app.get("/site", response_model=Site, tags=["content"])

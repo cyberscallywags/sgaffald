@@ -1,4 +1,8 @@
-"""Thin async Neo4j repository. Swap/extend this when the real domain arrives."""
+"""Item storage: Neo4j for real, or in memory for `uv run task dev` and the unit tests. Both
+have the same methods, so the API does not care which it has. Swap/extend these when the real
+domain arrives."""
+
+from typing import Protocol
 
 from neo4j import AsyncDriver, AsyncGraphDatabase
 
@@ -13,7 +17,39 @@ def make_driver(settings: Settings) -> AsyncDriver:
     )
 
 
+class ItemStore(Protocol):
+    """What the API needs from item storage."""
+
+    async def ping(self) -> bool: ...
+    async def ensure_schema(self) -> None: ...
+    async def create(self, data: ItemIn, created_by: str | None = None) -> Item: ...
+    async def list(self, limit: int = 100) -> list[Item]: ...
+
+
+class MemoryItemRepo:
+    """Items in a list: no database, gone on restart (STORAGE=memory)."""
+
+    def __init__(self) -> None:
+        self.items: list[Item] = []
+
+    async def ping(self) -> bool:
+        return True
+
+    async def ensure_schema(self) -> None:
+        return None
+
+    async def create(self, data: ItemIn, created_by: str | None = None) -> Item:
+        item = Item(**data.model_dump(), created_by=created_by)
+        self.items.insert(0, item)
+        return item
+
+    async def list(self, limit: int = 100) -> list[Item]:
+        return self.items[:limit]
+
+
 class ItemRepo:
+    """Items in Neo4j (STORAGE=neo4j, the default)."""
+
     def __init__(self, driver: AsyncDriver, database: str = "neo4j") -> None:
         self.driver = driver
         self.database = database
