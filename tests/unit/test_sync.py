@@ -17,13 +17,15 @@ _spec.loader.exec_module(sync_meta)
 
 
 def brand_words(root: Path = ROOT) -> set[str]:
-    """Words that only the brand may use: its organisation name and GitHub owner."""
-    meta = tomllib.loads((root / "brand/brand.toml").read_text())
-    return {meta["organisation"]["name"].lower(), meta["repository"]["owner"].lower()}
+    """Words that only the brand may use: its organisation's name and web address. (The GitHub
+    owner is not one: the template's own repository lives there.)"""
+    org = tomllib.loads((root / "brand/brand.toml").read_text())["organisation"]
+    host = org.get("url", "").split("//")[-1].split("/")[0]
+    return {org["name"].lower(), *([host.lower()] if host else [])}
 
 
 def test_template_files_never_name_the_brand():
-    # Markdown pages are checked once the handbook names the project through placeholders.
+    # Decision records are kept as written, so they may name the brand of their day.
     generated = {path.as_posix() for path in sync_meta.output_paths(ROOT)}
     if not (git := shutil.which("git")):
         pytest.skip("git is not installed")
@@ -38,10 +40,10 @@ def test_template_files_never_name_the_brand():
     for rel in listed:
         path = ROOT / rel
         if (
-            rel.startswith(("brand/", "examples/", "reports/"))
+            rel.startswith(("brand/", "examples/", "docs/content/handbook/decisions/"))
             or rel in generated
             or rel == "uv.lock"
-            or path.suffix in {".md", ".png", ".webp", ".svg"}
+            or path.suffix in {".png", ".webp", ".svg"}
             or not path.is_file()
         ):
             continue
@@ -159,6 +161,17 @@ def test_light_first_brands_reorder_the_docs_palette(fork):
     assert sync_meta.main(["--root", str(fork)]) == 0
     palette = tomllib.loads((fork / "docs/zensical.toml").read_text())["project"]["theme"]
     assert [p["scheme"] for p in palette["palette"]] == ["default", "slate"]
+
+
+def test_a_brand_can_leave_the_handbook_out_of_its_docs(fork):
+    edit_brand(fork, 'kicker = "', 'include_handbook = false\nkicker = "')
+    assert sync_meta.main(["--root", str(fork)]) == 0
+    config = (fork / "docs/zensical.toml").read_text()
+    assert '"handbook/' not in config.split("# sync:exclude")[0] + config.split("nav = [")[1]
+    assert "handbook/" in tomllib.loads(config)["project"]["exclude_docs"]
+    manual = (fork / "docs/content/manual.md").read_text()
+    assert "handbook/" not in manual
+    assert "project/overview" in manual  # the project's own pages stay
 
 
 def test_swapping_in_the_neutral_brand_rebrands_every_copy(fork):

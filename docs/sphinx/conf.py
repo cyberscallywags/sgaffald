@@ -57,7 +57,10 @@ autodoc_default_options = {"members": True, "show-inheritance": True}
 # Colours are the --brand-* tokens in brand.css, generated from brand/brand.toml by `task sync`,
 # so this file holds none. The images are the copies sync writes to assets/brand.
 BRAND_ASSETS = HERE.parent / "content/assets/brand"
-scheme = tomllib.loads((brand_dir() / "brand.toml").read_text())["theme"].get("docs", {})
+_brand = tomllib.loads((brand_dir() / "brand.toml").read_text())
+scheme = _brand["theme"].get("docs", {})
+if not _brand.get("docs", {}).get("include_handbook", True):
+    exclude_patterns.append("handbook/**")
 html_theme = "furo"
 html_title = f"{meta.name} manual"
 html_static_path = ["_static", "../content/assets/stylesheets"]

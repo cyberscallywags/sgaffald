@@ -1,7 +1,8 @@
 # Getting started
 
-Sgaffald is the Cyber Scallywags base template: the smallest stack that connects every
-part and is ready to be renamed and grown into a real project.
+This project is built on Sgaffald, a base template: the smallest stack that connects every part
+and is ready to be renamed, re-branded and grown into a real project. This handbook belongs to
+the template; the project's own pages are under [Project](../project/overview.md).
 
 ## What you need
 
@@ -81,5 +82,5 @@ uv run playwright uninstall --all      # remove every downloaded browser...
 uv run playwright install chromium     # ...and fetch back the one the tests use
 ```
 
-To share or archive the template, use `git archive HEAD -o sgaffald.zip` rather than zipping
+To share or archive the project, use `git archive HEAD -o project.zip` rather than zipping
 the folder, so only tracked files go in.

@@ -2,7 +2,7 @@
 
 `src/app/api/main.py`: FastAPI, the only service that writes to the graph (besides
 admin). Its endpoint docstrings become the OpenAPI descriptions, which feed both the live
-Swagger UI at <http://localhost:8000/docs> and the [HTTP API](../reference/http-api.md)
+Swagger UI at <http://localhost:8000/docs> and the [HTTP API](../../reference/http-api.md)
 reference.
 
 | Endpoint | Purpose |
@@ -22,7 +22,7 @@ your own domain; the unit tests use an in-memory `FakeRepo` with the same method
 
 `app.agent.build_agent` builds a Pydantic AI agent with one tool, `list_item_names`.
 `LLM_MODEL=test` selects the offline `TestModel`, which calls every tool and echoes the
-results, so tests need no API key. For a real model see [Configuration](../reference/configuration.md).
+results, so tests need no API key. For a real model see [Configuration](../../reference/configuration.md).
 
 ## CORS
 

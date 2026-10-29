@@ -10,7 +10,7 @@ Standard library only and idempotent, so pre-commit and the unit tests can run i
 generated files carry a GENERATED note; in hand-written files only the lines between
 `sync:<name>` and `/sync:<name>` markers are replaced. Images are copied byte for byte to
 fixed names (assets/brand/<key>.<ext>) in folders this script owns. See
-docs/content/guides/brand-kit.md.
+docs/content/handbook/brand-kit.md.
 """
 
 import argparse
@@ -38,6 +38,45 @@ IMAGE_DIRS: dict[Path, tuple[str, ...]] = {
     MOBILE / "src/assets/brand": ("logo", "mark", "favicon", "app_icon", "splash"),
     Path("src/app/ui/static"): ("mark", "favicon"),
 }
+# The template handbook (docs/content/handbook), in order. task sync writes it into both docs
+# navigations, or leaves it out when brand.toml sets [docs] include_handbook = false.
+HANDBOOK: list[tuple[str, list[str]]] = [
+    (
+        "Handbook",
+        [
+            "index",
+            "getting-started",
+            "architecture",
+            "site-manifest",
+            "brand-kit",
+            "make-it-yours",
+            "upgrade",
+            "from-scratch",
+        ],
+    ),
+    (
+        "Services",
+        ["services/api", "services/web-ui", "services/admin", "services/mobile", "services/docs"],
+    ),
+    (
+        "Development",
+        [
+            "development/ways-of-working",
+            "development/testing",
+            "development/environments",
+            "development/ci-cd",
+        ],
+    ),
+    (
+        "Decisions",
+        [
+            "decisions/index",
+            "decisions/0001-structure-and-reuse",
+            "decisions/0002-storage-and-reuse",
+            "decisions/0003-brand-kit-and-sign-on",
+        ],
+    ),
+]
 # PNG size rules: (minimum width, minimum height, must be exact).
 PNG_SIZES = {
     "mark": (128, 128, False),
@@ -218,7 +257,31 @@ def zensical(m: dict, text: str | None) -> str:
         if name
     )
     text = splice(text, "images", images)
-    return splice(text, "palette", zensical_palette(m["palette"]["scheme"]))
+    text = splice(text, "palette", zensical_palette(m["palette"]["scheme"]))
+    excluded = ["manual.md", "reference/python-api-sphinx.md"]
+    if not include_handbook(m):
+        excluded.append("handbook/")
+    text = splice(text, "exclude", 'exclude_docs = """\n' + "\n".join(excluded) + '\n"""\n')
+    return splice(
+        text, "handbook", zensical_handbook() if include_handbook(m) else "", ("  # ", "")
+    )
+
+
+def include_handbook(m: dict) -> bool:
+    return m.get("docs", {}).get("include_handbook", True)
+
+
+def zensical_handbook() -> str:
+    """The Handbook tab: its own pages first, then one section per later group."""
+    (_, pages), *groups = HANDBOOK
+    lines = ['  { "Handbook" = [', *(f'    "handbook/{page}.md",' for page in pages)]
+    for title, group in groups:
+        lines += [
+            f'    {{ "{title}" = [',
+            *(f'      "handbook/{p}.md",' for p in group),
+            "    ] },",
+        ]
+    return "\n".join([*lines, "  ] },"]) + "\n"
 
 
 def zensical_palette(first: str) -> str:
@@ -280,16 +343,56 @@ def kicker(m: dict) -> str:
     return m.get("docs", {}).get("kicker") or m["organisation"]["name"]
 
 
+MANUAL_CARDS = """::::{grid} 1 2 2 3
+:gutter: 3
+
+:::{grid-item-card} Get started
+:link: handbook/getting-started
+:link-type: doc
+
+Install the tools, start the stack, find every service.
+:::
+
+:::{grid-item-card} Architecture
+:link: handbook/architecture
+:link-type: doc
+
+How every service fits together.
+:::
+
+:::{grid-item-card} HTTP API
+:link: reference/http-api
+:link-type: doc
+
+Endpoints, bodies and `curl`, generated from the code.
+:::
+::::
+"""
+
+
 def manual_md(m: dict, text: str | None) -> str:
-    """The manual's opening: the crest (if any) and the kicker."""
-    body = ""
+    """The manual's opening (title, crest, kicker) and the handbook's cards and toctrees."""
+    text = splice(text or "", "brand", manual_brand(m), ("% ", ""))
+    handbook = ""
+    if include_handbook(m):
+        toctrees = [
+            f"```{{toctree}}\n:caption: {title}\n:maxdepth: {2 if title == 'Handbook' else 1}\n\n"
+            + "".join(f"handbook/{page}\n" for page in pages)
+            + "```\n"
+            for title, pages in HANDBOOK
+        ]
+        handbook = MANUAL_CARDS + "\n" + "\n".join(toctrees)
+    return splice(text, "handbook", handbook, ("% ", ""))
+
+
+def manual_brand(m: dict) -> str:
+    body = f"# {m['project']['name']} reference manual\n\n"
     if crest := published(m, "crest"):
         body += (
             f"```{{image}} assets/brand/{crest}\n:alt: {m['alt']['crest']}\n"
             ":class: brand-crest brand-crest--float\n```\n\n"
         )
-    body += f"{{.brand-kicker}}\n{kicker(m)} · Reference manual\n"
-    return splice(text or "", "brand", body, ("% ", ""))
+    return body + f"{{.brand-kicker}}\n{kicker(m)} · Reference manual\n"
 
 
 def brand_page(source: Path) -> Callable[[dict, str | None], str]:

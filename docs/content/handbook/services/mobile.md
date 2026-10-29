@@ -2,7 +2,7 @@
 
 `mobile/`: Ionic 9 + Angular 22 with standalone components, packaged with
 Capacitor 8. It talks to the API only, through `ApiService`
-(`src/app/core/api.service.ts`), whose types mirror the [data models](../reference/models.md).
+(`src/app/core/api.service.ts`), whose types mirror the [data models](../../reference/models.md).
 
 ## Structure
 

@@ -9,7 +9,7 @@ talks to the API over HTTP only, never to Neo4j.
 | `/` | Welcome, from the site manifest |
 | `/p/<slug>` | A sidebar page from the manifest |
 | `/items` | The item form and table |
-| `/about` | About Cyber Scallywags |
+| `/about` | The about page from the site manifest |
 
 The navbar mirrors the mobile side menu: welcome, the manifest's pages, Items, then About and
 Docs on the right. `render_section` turns each manifest section into FastUI components, the

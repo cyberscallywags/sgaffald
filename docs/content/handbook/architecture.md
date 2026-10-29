@@ -35,7 +35,7 @@ flowchart LR
 | Configuration | `src/app/config.py` (`Settings`) | Every Python service |
 | Identity, theme, images | `brand/brand.toml` and `brand/images` | Every service; `task sync` for the docs and mobile builds |
 | Pages | `brand/content/site.json`, served at `GET /site` | Web UI and mobile app |
-| HTTP API | FastAPI's OpenAPI schema | Swagger UI and the generated [HTTP API](reference/http-api.md) page |
+| HTTP API | FastAPI's OpenAPI schema | Swagger UI and the generated [HTTP API](../reference/http-api.md) page |
 | Docs reference | `python -m app.docgen` | Both docs sites |
 
 ## Repository layout

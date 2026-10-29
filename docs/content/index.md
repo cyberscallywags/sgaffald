@@ -18,7 +18,7 @@ hide:
 Scaffolding for the next project: an API, a web UI, an admin portal, a mobile app and a
 graph, tested and deployable from the first commit.
 
-[Get started](getting-started.md){ .md-button .md-button--primary }
+[Get started](handbook/getting-started.md){ .md-button .md-button--primary }
 [Reference manual](/manual/){ .md-button }
 
 </div>
@@ -37,7 +37,7 @@ graph, tested and deployable from the first commit.
 
     Install the tools, start the stack and find every service.
 
-    [Getting started →](getting-started.md)
+    [Getting started →](handbook/getting-started.md)
 
 -   **Architecture**
 
@@ -45,7 +45,7 @@ graph, tested and deployable from the first commit.
 
     How the API, UI, admin, mobile app and Neo4j fit together.
 
-    [Architecture →](architecture.md)
+    [Architecture →](handbook/architecture.md)
 
 -   **Site manifest**
 
@@ -53,7 +53,7 @@ graph, tested and deployable from the first commit.
 
     One JSON file drives the brand, theme and pages on web and mobile.
 
-    [Site manifest →](site-manifest.md)
+    [Site manifest →](handbook/site-manifest.md)
 
 -   **HTTP API**
 
@@ -86,4 +86,4 @@ graph, tested and deployable from the first commit.
 This **portal**, built with Zensical, is the quickest way around. The
 [reference manual](/manual/), built with Sphinx and Furo, renders the same pages plus the
 Python API from docstrings. Both come from `docs/content`; see
-[The docs site](services/docs.md).
+[The docs site](handbook/services/docs.md).
