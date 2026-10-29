@@ -9,6 +9,28 @@ export interface Item {
   id: string;
   name: string;
   created_at: string;
+  /** `id` of the member who added it. */
+  created_by?: string | null;
+}
+
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+  role: 'member' | 'admin';
+}
+
+/** What POST /auth/login returns; `token` goes in `Authorization: Bearer <token>`. */
+export interface Session {
+  token: string;
+  member: Member;
+  expires_at: string;
+}
+
+/** How to offer sign-on: `mock` lists demo members; `off` means everyone can write. */
+export interface AuthInfo {
+  mode: 'off' | 'mock';
+  demo_users: Member[];
 }
 
 export interface Health {
@@ -62,6 +84,8 @@ export interface Site {
   pages: ContentPage[];
   /** Docs portal URL from the API's DOCS_URL setting; null hides the menu link. */
   docs_url?: string | null;
+  /** Added by the API from its sign-on settings. */
+  auth?: AuthInfo | null;
 }
 
 /** The app's only way to reach data: HTTP to the API, never Neo4j. */
@@ -84,5 +108,9 @@ export class ApiService {
 
   createItem(name: string): Observable<Item> {
     return this.http.post<Item>(`${this.base}/items`, { name });
+  }
+
+  login(email: string, password: string): Observable<Session> {
+    return this.http.post<Session>(`${this.base}/auth/login`, { email, password });
   }
 }

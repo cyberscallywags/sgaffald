@@ -15,35 +15,63 @@
     <div class="ion-padding-horizontal">
       <ion-button expand="block" fill="outline" (click)="session.signOut()">Sign out</ion-button>
     </div>
+  } @else if (mode() === 'off') {
+    <ion-text color="medium">
+      <p class="ion-padding">Sign-on is off: everyone can add items.</p>
+    </ion-text>
   } @else {
     <form [formGroup]="form" (ngSubmit)="submit()">
       <ion-list inset>
-        <ion-item>
-          <ion-input
-            label="Name"
-            labelPlacement="stacked"
-            formControlName="name"
-            autocomplete="name"
-            errorText="Name is required"
-          ></ion-input>
-        </ion-item>
         <ion-item>
           <ion-input
             label="Email"
             labelPlacement="stacked"
             type="email"
             formControlName="email"
-            autocomplete="email"
+            autocomplete="username"
             errorText="Enter a valid email"
+          ></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input
+            label="Password"
+            labelPlacement="stacked"
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+            errorText="Enter the password"
           ></ion-input>
         </ion-item>
       </ion-list>
       <div class="ion-padding-horizontal">
-        <ion-button type="submit" expand="block">Sign in</ion-button>
+        <ion-button type="submit" expand="block" [disabled]="busy()">Sign in</ion-button>
       </div>
     </form>
+
+    @if (error(); as message) {
+      <ion-text color="danger" role="alert">
+        <p class="ion-padding-horizontal">{{ message }}</p>
+      </ion-text>
+    }
+
+    @if (demoMembers().length) {
+      <ion-list inset data-testid="demo-members">
+        <ion-list-header>Demo members</ion-list-header>
+        @for (member of demoMembers(); track member.id) {
+          <ion-item [button]="true" [detail]="false" (click)="use(member)">
+            <ion-label>
+              <h3>{{ member.name }}</h3>
+              <p>{{ member.email }} · {{ member.role }}</p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+    <ion-note class="ion-padding" color="medium">
+      <p>
+        This is a demo sign-on: every demo member's password is <code>demo</code> unless the
+        API's AUTH_DEMO_PASSWORD says otherwise.
+      </p>
+    </ion-note>
   }
-  <ion-note class="ion-padding" color="medium">
-    <p>Sign-on is a placeholder until {{ brand().brand.name }} connects an identity provider.</p>
-  </ion-note>
 </ion-content>

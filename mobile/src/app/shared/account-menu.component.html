@@ -1,0 +1,32 @@
+@if (enabled()) {
+  @if (session.member(); as member) {
+    <ion-button fill="clear" color="light" aria-label="Account" data-testid="account-button" (click)="show($event)">
+      <span class="initials">{{ initials(member.name) }}</span>
+    </ion-button>
+    <ion-popover [isOpen]="open()" [event]="trigger" (didDismiss)="open.set(false)">
+      <ng-template>
+        <ion-list lines="none" data-testid="account-menu">
+          <ion-item>
+            <ion-label>
+              <h3>{{ member.name }}</h3>
+              <p>{{ member.email }}</p>
+              <p>Role: {{ member.role }}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item routerLink="/account" [button]="true" [detail]="false" (click)="open.set(false)">
+            <ion-icon slot="start" [name]="iconName('person-circle-outline')"></ion-icon>
+            <ion-label>Account</ion-label>
+          </ion-item>
+          <ion-item [button]="true" [detail]="false" (click)="signOut()" data-testid="sign-out">
+            <ion-icon slot="start" [name]="iconName('log-out-outline')"></ion-icon>
+            <ion-label>Sign out</ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-template>
+    </ion-popover>
+  } @else {
+    <ion-button routerLink="/sign-in" fill="clear" color="light" data-testid="account-button">
+      Sign in
+    </ion-button>
+  }
+}
