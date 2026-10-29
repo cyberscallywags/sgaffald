@@ -5,8 +5,17 @@ depends on how the project was created (see [Make it yours](make-it-yours.md)):
 
 | Created with | Pull template changes with |
 |---|---|
+| Copier | `uvx copier update --trust`: a three-way merge of the template's changes since the version you made the project from |
 | Clone and re-point (keeps the template's history) | `git fetch template && git merge template/main` |
 | GitHub **Use this template** (fresh history) | add the template as a remote, then cherry-pick or diff the commits you want |
+
+```bash
+# Copier projects: in the project, with a clean working tree
+uvx copier update --trust              # or --vcs-ref vX.Y.Z to go one release at a time
+```
+
+Copier re-runs nothing on update: your `brand/` stays yours, because `scripts/new_project.py`
+only runs when a project is first made.
 
 ```bash
 # Use-this-template projects: add the template once

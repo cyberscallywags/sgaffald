@@ -9,7 +9,20 @@ any other change (see [Ways of working](development/ways-of-working.md)).
 Copying folders by hand drops dotfiles (`.github/`, `.env.*`, `.pre-commit-config.yaml`,
 `.python-version`) and loses the link back to the template. Pick one of these instead:
 
-- **From a GitHub template (recommended, clean history).** Tick *Settings → General →
+- **With Copier (does steps 1–4 for you, and can apply template updates later).** It asks for
+  the name, organisation, GitHub owner and repository, app id and primary colour, then runs
+  `scripts/new_project.py`, which swaps in the neutral brand with your answers, resets the
+  version and runs `task sync`. Then continue at step 5.
+
+  ```bash
+  uvx copier copy --trust gh:cyberscallywags/sgaffald data-volunteer-network
+  cd data-volunteer-network && git init && uv lock && uv run task verify
+  ```
+
+  `--trust` lets Copier run that script. The answers are kept in `.copier-answers.yml`, which
+  `copier update` uses; see [Upgrading](upgrade.md).
+
+- **From a GitHub template (clean history).** Tick *Settings → General →
   Template repository* on `sgaffald` once, then either press **Use this template** or run:
 
   ```bash
@@ -37,7 +50,9 @@ Everything project-specific lives in `brand/` (its `README.md` lists every file)
 example (the default brand's artwork is not licensed for reuse), then edit it:
 
 ```bash
-rm -r brand && cp -r examples/brands/neutral brand
+python scripts/new_project.py --name "Data Volunteer Network" \
+  --organisation "Data Volunteers" --owner data-volunteers --primary "#3d405b"
+# or by hand: rm -r brand && cp -r examples/brands/neutral brand, then edit brand/brand.toml
 ```
 
 | File | Change |

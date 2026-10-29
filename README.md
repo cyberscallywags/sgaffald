@@ -50,12 +50,13 @@ uv run task verify         # lint → unit → build+start stack → integration
 ## Start a new project from this template
 
 ```bash
-gh repo create <owner>/<name> --template cyberscallywags/sgaffald --public --clone
-cd <name>
-rm -r brand && cp -r examples/brands/neutral brand   # then edit brand/
-uv run task sync && uv lock                            # check the brand, rewrite every copy
-uv run task verify
+uvx copier copy --trust gh:cyberscallywags/sgaffald <name>   # asks for name, organisation, colour…
+cd <name> && git init && uv lock && uv run task verify
 ```
+
+Or press **Use this template** on GitHub, clone the new repository and run
+`python scripts/new_project.py --name "<Name>"`, which swaps in the neutral brand with your
+identity and runs `task sync`.
 
 `brand/` holds everything project-specific: identity, colours, images, pages and the docs home
 page. The default brand's artwork is not licensed for reuse (see TRADEMARKS.md), so start from
