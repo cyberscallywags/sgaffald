@@ -36,6 +36,21 @@ async def test_landing_is_themed_from_the_site_manifest(ui_client):
     assert f"<title>{get_site().brand.name}</title>" in r.text
 
 
+async def test_landing_links_the_brand_favicon_and_mark(ui_client):
+    r = await ui_client.get("/")
+    assert '<link rel="icon" href="/static/favicon.png">' in r.text
+    assert "url('/static/mark." in r.text  # the navbar logo
+
+
+@pytest.mark.parametrize("stem", ["favicon", "mark"])
+async def test_static_serves_the_brand_images_sync_copied(ui_client, stem):
+    url = ui.static_file(stem)
+    assert url, f"run `uv run task sync`: src/app/ui/static/{stem}.* is missing"
+    r = await ui_client.get(url)
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("image/")
+
+
 async def test_welcome_renders_the_manifest(ui_client):
     r = await ui_client.get("/api/")
     assert r.status_code == 200

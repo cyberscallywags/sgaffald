@@ -3,7 +3,7 @@
 Run ``uv run python -m app.docgen`` to write the pages into ``docs/content/reference``.
 
 Sources: the API's OpenAPI schema, the Pydantic models, Settings, the .env files, the
-taskipy tasks in pyproject.toml and the project identity in project.toml. The output is plain
+taskipy tasks in pyproject.toml and the brand in brand/brand.toml. The output is plain
 Markdown (tables, code fences, links) that both Sphinx (MyST) and Zensical render, so one
 generator feeds both sites.
 """
@@ -257,7 +257,7 @@ def configuration_page(root: Path) -> str:
     out.append(
         "\n## Environment files\n\n"
         "Docker compose reads `.env.project` first: the project identity, generated from "
-        "`project.toml` by `uv run task sync`. Later files can use its values, as in "
+        "`brand/brand.toml` by `uv run task sync`. Later files can use its values, as in "
         "`${PROJECT_SLUG}`.\n\n"
     )
     out.append(
@@ -303,17 +303,17 @@ def tasks_page(root: Path) -> str:
     )
 
 
-def site_sample_page() -> str:
-    from app.content import DEFAULT_SITE_FILE
-
+def site_sample_page(root: Path) -> str:
     return "".join(
         [
             "# Sample site manifest\n\n",
             GENERATED,
-            "The bundled `src/app/content/site.json`, validated by "
-            f"{model_link('Site')}. Copy it, edit it and point `SITE_FILE` at your copy.\n\n",
+            "The bundled `brand/content/site.json`, validated by "
+            f"{model_link('Site')} once `GET /site` has added the theme from `brand.toml`. "
+            "Edit it in place, or copy the whole `brand/` folder and point `BRAND_DIR` at the "
+            "copy.\n\n",
             "```json\n",
-            DEFAULT_SITE_FILE.read_text().strip(),
+            (root / "brand/content/site.json").read_text().strip(),
             "\n```\n",
         ]
     )
@@ -326,11 +326,11 @@ def sync_outputs(root: Path) -> list[str]:
         return []
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return [path.as_posix() for path in module.OUTPUTS]
+    return [path.as_posix() for path in module.output_paths(root)]
 
 
 def project_metadata_page(root: Path) -> str:
-    meta = load_meta(root / "project.toml")
+    meta = load_meta(root / "brand/brand.toml")
     rows = [
         ["`project.name`", meta.name, "Titles, app name, docs"],
         ["`project.slug`", f"`{meta.slug}`", "Compose project, image names, cache keys"],
@@ -342,6 +342,11 @@ def project_metadata_page(root: Path) -> str:
         ["`repository.owner` / `name`", meta.repository.url, "README badges"],
         ["(derived)", f"`{meta.repository.image_prefix}`", "Release image prefix"],
         ["`mobile.app_id`", f"`{meta.mobile.app_id}`", "Capacitor app id"],
+        [
+            "`theme.primary` / `secondary` / `tertiary`",
+            f"`{meta.theme.primary}` `{meta.theme.secondary}` `{meta.theme.tertiary}`",
+            "Web UI and mobile colours, served by `GET /site`",
+        ],
         ["version (`pyproject.toml`)", f"`{meta.version}`", "API, manual, mobile package"],
     ]
     copies = "".join(f"- `{path}`\n" for path in sync_outputs(root))
@@ -349,12 +354,13 @@ def project_metadata_page(root: Path) -> str:
         [
             "# Project metadata\n\n",
             GENERATED,
-            "The project's identity, from `project.toml` at the repository root (read by "
-            "`app.meta`), and its version, from `pyproject.toml`. Content (tagline, theme, "
-            "pages) is the [site manifest](../site-manifest.md)'s job.\n\n",
+            "The project's identity and theme, from `brand/brand.toml` (read by `app.meta`), "
+            "and its version, from `pyproject.toml`. Images, the docs palette and the brand's "
+            "docs pages are described in the [brand kit](../guides/brand-kit.md); pages and "
+            "copy are the [site manifest](../site-manifest.md)'s job.\n\n",
             table(["Key", "Value", "Used for"], rows),
             "\n## Generated copies\n\n"
-            "The Python services and the Sphinx manual read `project.toml` directly. These files "
+            "The Python services and the Sphinx manual read `brand.toml` directly. These files "
             "cannot, so `uv run task sync` writes the values into them, and "
             "`tests/unit/test_sync.py` fails if any is stale:\n\n",
             copies,
@@ -370,7 +376,7 @@ def generate(out_dir: Path, root: Path) -> list[Path]:
         "models.md": models_page(),
         "configuration.md": configuration_page(root),
         "tasks.md": tasks_page(root),
-        "site-sample.md": site_sample_page(),
+        "site-sample.md": site_sample_page(root),
         "project-metadata.md": project_metadata_page(root),
     }
     out_dir.mkdir(parents=True, exist_ok=True)

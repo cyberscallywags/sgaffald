@@ -13,7 +13,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-dev --group docs --no-install-project
-COPY pyproject.toml uv.lock README.md project.toml .env.project .env.test .env.production.example ./
+COPY pyproject.toml uv.lock README.md .env.project .env.test .env.production.example ./
+COPY brand ./brand
 COPY src ./src
 COPY scripts ./scripts
 COPY docs ./docs

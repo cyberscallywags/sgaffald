@@ -55,7 +55,7 @@ async def test_site_serves_the_manifest(client):
     r = await client.get("/site")
     assert r.status_code == 200
     body = r.json()
-    # site.json leaves the name and collective out, so they come from project.toml
+    # site.json leaves the name and collective out, so they come from brand.toml
     assert body["brand"]["name"] == get_meta().name
     assert body["brand"]["collective"] == get_meta().organisation.name
     assert body["theme"]["primary"].startswith("#")

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 128" role="img" aria-label="Example Project">
+  <rect width="128" height="128" rx="28" fill="#264653"/>
+  <rect x="36" y="36" width="56" height="56" rx="6" fill="none" stroke="#2a9d8f" stroke-width="12"/>
+  <text x="152" y="80" font-family="system-ui, sans-serif" font-size="40" font-weight="700" fill="#264653">Example Project</text>
+</svg>

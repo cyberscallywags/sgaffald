@@ -1,0 +1,91 @@
+/*
+ * Shared by both docs sites: engine-neutral pieces (hero, crest, kicker). Colours come only
+ * from the --brand-* tokens in brand.css, generated from brand/brand.toml by `task sync`;
+ * zensical.css and sphinx/_static/furo.css map the same tokens onto each theme.
+ */
+
+/* Every image scales with its column and never overflows a phone screen. */
+article img,
+.md-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* The crest: capped width, centred, scales down on narrow screens. */
+img.brand-crest {
+  display: block;
+  width: min(100%, 18rem);
+  height: auto;
+  margin: 1.5rem auto;
+  filter: drop-shadow(0 0 1.25rem rgba(var(--brand-accent-rgb), 0.25));
+}
+
+/* Small mono capitals with wide tracking, like the site's labels. */
+.brand-kicker {
+  font-family: var(--brand-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+}
+
+/* Hero: text beside the crest on wide screens, stacked on phones. */
+.brand-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: center;
+  margin: 0 0 2rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid var(--brand-border);
+  border-radius: 0.75rem;
+  background:
+    radial-gradient(circle at 85% 20%, rgba(var(--brand-accent-2-rgb), 0.18), transparent 55%),
+    radial-gradient(circle at 10% 90%, rgba(var(--brand-accent-rgb), 0.16), transparent 50%),
+    linear-gradient(180deg, var(--brand-background-2), var(--brand-background));
+  color: #fff;
+}
+
+.brand-hero h1 {
+  margin: 0.25rem 0 0.75rem;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  letter-spacing: -0.02em;
+}
+
+.brand-hero p {
+  color: var(--brand-text-muted);
+}
+
+.brand-hero__crest img {
+  display: block;
+  width: clamp(9rem, 22vw, 18rem);
+  height: auto;
+  filter: drop-shadow(0 0 1.5rem rgba(var(--brand-accent-rgb), 0.3));
+}
+
+@media (max-width: 44em) {
+  .brand-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .brand-hero__crest {
+    order: -1;
+  }
+
+  .brand-hero__crest img {
+    width: min(60vw, 14rem);
+    margin: 0 auto;
+  }
+}
+
+/* Gradient title text, as on the site's headline. */
+.brand-gradient-text,
+.brand-hero h1 {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

@@ -26,7 +26,7 @@ src/app/
 
 ## Adding pages
 
-- **A content page**: add it to `pages` in `site.json`. No code change.
+- **A content page**: add it to `pages` in `brand/content/site.json`. No code change.
 - **A screen with behaviour**: create it under `pages/`, add its route in `app.routes.ts`
   and an entry in `features.ts`.
 

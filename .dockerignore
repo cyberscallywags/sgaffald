@@ -14,6 +14,7 @@ tests
 *.md
 !README.md
 !docs/content/**/*.md
+!brand/docs/*.md
 docs/_build
 docs/.cache
 mobile/node_modules

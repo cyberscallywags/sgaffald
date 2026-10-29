@@ -64,9 +64,10 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/app"]
 
-# Installed services (the Docker images) read project identity from inside the package.
+# Installed services (the Docker images) read the brand from inside the package.
 [tool.hatch.build.targets.wheel.force-include]
-"project.toml" = "app/project.toml"
+"brand/brand.toml" = "app/brand/brand.toml"
+"brand/content" = "app/brand/content"
 
 # ---------------------------------------------------------------- taskipy
 # Test env:   uses .env.test (committed, throwaway secrets)
@@ -82,7 +83,7 @@ docs_build = "python -m app.docgen && zensical build --strict --clean -f docs/ze
 
 [tool.taskipy.tasks]
 clean = { cmd = "rm -rf .venv .pytest_cache .ruff_cache .coverage coverage.xml htmlcov docs/_build docs/.cache mobile/node_modules mobile/.angular mobile/www && find . -name __pycache__ -type d -prune -exec rm -rf {} +", help = "Delete every regenerable directory (then uv sync to rebuild .venv)" }
-sync = { cmd = "python scripts/sync_meta.py", help = "Copy project.toml and site.json into the files that cannot read them" }
+sync = { cmd = "python scripts/sync_meta.py", help = "Copy the brand (brand/) into the files that cannot read it, and check it" }
 lint = { cmd = "ruff check . && ruff format --check .", help = "Ruff lint + format check" }
 format = { cmd = "ruff format . && ruff check --fix .", help = "Auto-format and fix" }
 hooks = { cmd = "pre-commit run --all-files", help = "Run every pre-commit hook" }

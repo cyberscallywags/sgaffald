@@ -68,7 +68,7 @@ Every commit runs the pre-commit hooks on the staged files:
 | `check-yaml`, `check-toml` | YAML and TOML files parse |
 | `check-added-large-files`, `detect-private-key` | no large files or private keys |
 | `no-commit-to-branch` | you are not on `main` |
-| `sync-meta` | the copies of `project.toml` are current (fix with `uv run task sync`) |
+| `sync-meta` | the brand is valid and its copies are current (fix with `uv run task sync`) |
 | `ruff-check`, `ruff-format` | lint and format Python (fixes what it can) |
 | `uv-lock` | `uv.lock` matches `pyproject.toml` |
 | `actionlint` | the GitHub workflows are valid |
@@ -105,7 +105,7 @@ A pull request is ready to merge when:
 - it meets the issue's acceptance criteria or definition of done;
 - tests are added or updated, and `ci-passed` is green;
 - the docs under `docs/content` match the change;
-- `uv run task sync` has been run if `project.toml` or `site.json` changed.
+- `uv run task sync` has been run if anything in `brand/` changed.
 
 Merge with a merge commit, then delete the branch.
 

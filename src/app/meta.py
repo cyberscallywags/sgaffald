@@ -1,6 +1,6 @@
-"""Project identity from project.toml: name, organisation, repository, app id. The version comes
-from the installed package (pyproject.toml). Content (brand, theme, pages) is site.json's job;
-see app.content."""
+"""Project identity from brand/brand.toml: name, organisation, repository, app id and theme. The
+version comes from the installed distribution (pyproject.toml). Pages and copy are
+content/site.json's job; see app.content."""
 
 import tomllib
 from functools import lru_cache
@@ -9,9 +9,17 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-# Wheels carry a copy (pyproject.toml force-include); a source checkout reads the root file.
-_PACKAGED = Path(__file__).with_name("project.toml")
-PROJECT_FILE = _PACKAGED if _PACKAGED.exists() else Path(__file__).parents[2] / "project.toml"
+from app.config import get_settings
+from app.models import Theme
+
+# Wheels carry a copy of the brand (pyproject.toml force-include); a checkout reads brand/.
+_PACKAGED = Path(__file__).with_name("brand")
+DEFAULT_BRAND_DIR = _PACKAGED if _PACKAGED.exists() else Path(__file__).parents[2] / "brand"
+
+
+def brand_dir() -> Path:
+    """The brand in use: the BRAND_DIR setting, or the bundled one."""
+    return get_settings().brand_dir or DEFAULT_BRAND_DIR
 
 
 class Organisation(BaseModel):
@@ -45,7 +53,7 @@ class Mobile(BaseModel):
 
 
 class Meta(BaseModel):
-    """Everything in project.toml, plus the package version."""
+    """Everything in brand.toml that the services use, plus the package version."""
 
     name: str
     slug: str = Field(pattern=r"^[a-z][a-z0-9-]*$")
@@ -55,6 +63,7 @@ class Meta(BaseModel):
     organisation: Organisation
     repository: Repository
     mobile: Mobile
+    theme: Theme  # [theme.docs] is for the docs build only (scripts/sync_meta.py)
 
 
 def package_version() -> str:
@@ -71,5 +80,5 @@ def load_meta(path: Path) -> Meta:
 
 @lru_cache
 def get_meta() -> Meta:
-    """project.toml, read once per process."""
-    return load_meta(PROJECT_FILE)
+    """brand.toml, read once per process."""
+    return load_meta(brand_dir() / "brand.toml")
