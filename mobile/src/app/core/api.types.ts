@@ -15,10 +15,11 @@ export interface Item {
   created_by?: string | null;
 }
 
-/** API status and whether Neo4j is reachable. */
+/** API status, where items are stored, and whether Neo4j is reachable. */
 export interface Health {
   status: string;
   env: string;
+  storage: 'neo4j' | 'memory';
   neo4j: boolean;
 }
 

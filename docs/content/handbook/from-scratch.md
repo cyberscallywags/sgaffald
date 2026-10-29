@@ -35,11 +35,11 @@ as the Neo4j one to come, so the API runs before any database exists.
 | Adds | Files |
 |---|---|
 | Routes | `src/app/api/main.py`: `GET /health`, `POST /items`, `GET /items` |
-| Repository | the `FakeRepo` in `tests/conftest.py` is exactly this in-memory repository |
+| Repository | `MemoryItemRepo` in `src/app/db.py` (the unit tests' `FakeRepo` builds on it) |
 | Tests | `tests/unit/test_api.py`, driving the app in-process |
 
-**Check:** `uv run task test`, then `uv run uvicorn app.api.main:app` and open
-<http://localhost:8000/docs>.
+**Check:** `uv run task test`, then `STORAGE=memory uv run uvicorn app.api.main:app` and open
+<http://localhost:8000/docs>. `uv run task dev` runs this stage and the web UI together.
 
 ## 3. The graph
 

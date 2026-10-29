@@ -24,7 +24,7 @@ function setup(api: Partial<ApiService>): ComponentFixture<ItemsPage> {
 
 describe('ItemsPage', () => {
   const stub = () => ({
-    health: vi.fn(() => of({ status: 'ok', env: 'test', neo4j: true })),
+    health: vi.fn(() => of({ status: 'ok', env: 'test', storage: 'neo4j' as const, neo4j: true })),
     listItems: vi.fn(() => of([existing])),
     createItem: vi.fn((name: string) => of({ id: '2', name, created_at: '2026-01-02T00:00:00Z' })),
   });

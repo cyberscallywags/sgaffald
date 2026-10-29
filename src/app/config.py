@@ -21,6 +21,13 @@ class Settings(BaseSettings):
         "test", description="Which environment the services run in; shown by `GET /health`."
     )
 
+    storage: Literal["neo4j", "memory"] = Field(
+        "neo4j",
+        description=(
+            "Where the API keeps items. `memory` needs no database and forgets everything on "
+            "restart: for `uv run task dev` and quick experiments."
+        ),
+    )
     neo4j_uri: str = Field("bolt://localhost:7687", description="Bolt URI of the Neo4j server.")
     neo4j_user: str = Field("neo4j", description="Neo4j user for the API and admin.")
     neo4j_password: SecretStr = Field(
