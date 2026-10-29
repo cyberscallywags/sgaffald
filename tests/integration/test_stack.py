@@ -1,6 +1,7 @@
 """End-to-end checks across every container. Requires `task up` (or the CI compose step)."""
 
 import os
+from pathlib import Path
 from uuid import uuid4
 
 import httpx
@@ -8,6 +9,13 @@ import pytest
 from neo4j import GraphDatabase
 
 pytestmark = pytest.mark.integration
+
+
+def neo4j_image() -> str:
+    env_test = Path(__file__).parents[2] / ".env.test"
+    lines = [line for line in env_test.read_text().splitlines() if line.startswith("NEO4J_IMAGE=")]
+    return os.getenv("NEO4J_IMAGE") or (lines[0].split("=", 1)[1] if lines else "")
+
 
 API = os.getenv("API_URL", "http://localhost:8000")
 UI = os.getenv("UI_URL", "http://localhost:8080")
@@ -17,6 +25,8 @@ DOCS = os.getenv("DOCS_URL", "http://localhost:8200")
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "sgaffald-test-only")
 DEMO_PASSWORD = os.getenv("AUTH_DEMO_PASSWORD", "demo")
+# Community unless NEO4J_IMAGE (the environment, else .env.test) names an Enterprise image
+NEO4J_EDITION = "enterprise" if "enterprise" in neo4j_image() else "community"
 
 
 @pytest.fixture(scope="module")
@@ -57,10 +67,10 @@ def test_writes_without_a_token_are_refused_when_sign_on_is_mock(member):
     assert httpx.post(f"{API}/items", json={"name": "anonymous"}).status_code == 401
 
 
-def test_neo4j_is_enterprise():
+def test_neo4j_edition_matches_the_image():
     with GraphDatabase.driver(NEO4J_URI, auth=("neo4j", NEO4J_PASSWORD)) as driver:
         records, _, _ = driver.execute_query("CALL dbms.components() YIELD edition RETURN edition")
-    assert records[0]["edition"] == "enterprise"
+    assert records[0]["edition"] == NEO4J_EDITION
 
 
 def test_ui_renders_item_via_api(name):

@@ -10,8 +10,8 @@ x-release: &release
 services:
   neo4j:
     environment:
-      # Production requires a commercial Neo4j Enterprise licence: set NEO4J_LICENSE=yes
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: ${NEO4J_LICENSE:?set NEO4J_LICENSE=yes in .env.production}
+      # Community needs nothing here; an Enterprise image needs NEO4J_LICENSE=yes (commercial)
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: ${NEO4J_LICENSE:-}
     ports: !reset []
     restart: unless-stopped
 
