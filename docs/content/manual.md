@@ -61,6 +61,7 @@ services/docs
 :caption: Development
 :maxdepth: 1
 
+development/ways-of-working
 development/testing
 development/environments
 development/ci-cd

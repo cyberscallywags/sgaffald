@@ -35,6 +35,7 @@ nav = [
     "services/docs.md",
   ] },
   { "Development" = [
+    "development/ways-of-working.md",
     "development/testing.md",
     "development/environments.md",
     "development/ci-cd.md",
