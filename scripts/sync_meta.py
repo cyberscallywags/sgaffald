@@ -49,6 +49,7 @@ HANDBOOK: list[tuple[str, list[str]]] = [
             "architecture",
             "site-manifest",
             "brand-kit",
+            "sign-on",
             "make-it-yours",
             "upgrade",
             "from-scratch",

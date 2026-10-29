@@ -11,6 +11,8 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.agent import Deps, build_agent
+from app.api import auth
+from app.api.auth import CurrentMember
 from app.config import get_settings
 from app.content import get_site
 from app.db import ItemRepo, make_driver
@@ -21,6 +23,7 @@ from app.models import AskIn, AskOut, Health, Item, ItemIn, Site
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
+    auth.check_settings(settings)
     driver = make_driver(settings)
     repo = ItemRepo(driver, settings.neo4j_database)
     if await repo.ping():
@@ -42,8 +45,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().cors_origins,
     allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "Authorization"],
 )
+app.include_router(auth.router)
 
 
 def get_repo(request: Request) -> ItemRepo:
@@ -62,14 +66,18 @@ async def health(repo: Repo) -> Health:
 
 @app.get("/site", response_model=Site, tags=["content"])
 async def site() -> Site:
-    """Brand, theme and pages shared by the web and mobile frontends, plus the docs link."""
-    return get_site().model_copy(update={"docs_url": get_settings().docs_url or None})
+    """Brand, theme and pages shared by the web and mobile frontends, plus the docs link and how
+    to sign on."""
+    return get_site().model_copy(
+        update={"docs_url": get_settings().docs_url or None, "auth": auth.auth_info()}
+    )
 
 
 @app.post("/items", response_model=Item, status_code=201, tags=["items"])
-async def create_item(data: ItemIn, repo: Repo) -> Item:
-    """Store a new item in Neo4j; the server assigns `id` and `created_at`."""
-    return await repo.create(data)
+async def create_item(data: ItemIn, repo: Repo, member: CurrentMember) -> Item:
+    """Store a new item in Neo4j for the signed-in member; the server assigns `id`,
+    `created_at` and `created_by`. Needs a bearer token unless sign-on is off."""
+    return await repo.create(data, created_by=member.id)
 
 
 @app.get("/items", response_model=list[Item], tags=["items"])
@@ -78,8 +86,9 @@ async def list_items(repo: Repo, limit: int = 100) -> list[Item]:
     return await repo.list(limit=limit)
 
 
-@app.post("/ask", response_model=AskOut, tags=["ai"])
+@app.post("/ask", response_model=AskOut, tags=["ai"], dependencies=[Depends(auth.current_member)])
 async def ask(body: AskIn, request: Request, repo: Repo) -> AskOut:
-    """Answer a question with the Pydantic AI agent, which can read items from the graph."""
+    """Answer a question with the Pydantic AI agent, which can read items from the graph.
+    Needs a bearer token unless sign-on is off."""
     result = await request.app.state.agent.run(body.question, deps=Deps(repo=repo))
     return AskOut(answer=result.output)

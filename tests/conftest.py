@@ -22,8 +22,8 @@ class FakeRepo:
     async def ensure_schema(self) -> None:
         return None
 
-    async def create(self, data: ItemIn) -> Item:
-        item = Item(**data.model_dump())
+    async def create(self, data: ItemIn, created_by: str | None = None) -> Item:
+        item = Item(**data.model_dump(), created_by=created_by)
         self.items.insert(0, item)
         return item
 
@@ -34,3 +34,15 @@ class FakeRepo:
 @pytest.fixture
 def fake_repo() -> FakeRepo:
     return FakeRepo()
+
+
+@pytest.fixture
+def mock_sign_on(monkeypatch):
+    """Turn mock sign-on on for one test, whatever brand.toml says."""
+    from app.api.auth import demo_members
+    from app.config import get_settings
+
+    monkeypatch.setattr(get_settings(), "auth_mode", "mock")
+    demo_members.cache_clear()
+    yield
+    demo_members.cache_clear()

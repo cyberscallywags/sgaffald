@@ -6,8 +6,12 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
+from pydantic_core import PydanticUseDefault
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# A throwaway default; the API refuses it in production (app.api.auth.check_settings).
+DEFAULT_AUTH_SECRET = "test-only-signing-key-change-me-in-production"  # noqa: S105
 
 
 class Settings(BaseSettings):
@@ -54,6 +58,45 @@ class Settings(BaseSettings):
             "Mount another folder and point this at it to re-brand a built image."
         ),
     )
+
+    auth_mode: Literal["off", "mock"] | None = Field(
+        None,
+        description=(
+            "Sign-on. `mock`: demo members from the brand's `content/users.json` sign in with "
+            "`AUTH_DEMO_PASSWORD` and get a signed token; writes need one. `off`: every request "
+            "is a fixed local member. Unset means `[auth] mode` in `brand.toml`."
+        ),
+    )
+    auth_secret: SecretStr = Field(
+        SecretStr(DEFAULT_AUTH_SECRET),
+        description="Key that signs sign-on tokens (HS256). Must be changed in production.",
+    )
+    auth_demo_password: SecretStr = Field(
+        SecretStr("demo"), description="The one password every demo member signs in with."
+    )
+    auth_ttl_minutes: int = Field(480, description="How long a sign-on token lasts.")
+    auth_allow_mock: bool = Field(
+        False,
+        description=(
+            "Allow mock sign-on when `APP_ENV=production`, e.g. for a public demo. Without it "
+            "the API refuses to start in production with mock sign-on."
+        ),
+    )
+
+    @field_validator(
+        "auth_mode",
+        "auth_secret",
+        "auth_demo_password",
+        "auth_ttl_minutes",
+        "auth_allow_mock",
+        mode="before",
+    )
+    @classmethod
+    def _empty_means_default(cls, value: object) -> object:
+        # docker compose passes an unset variable as "", which should not override a default.
+        if value == "":
+            raise PydanticUseDefault
+        return value
 
     docs_url: str | None = Field(
         "http://localhost:8200",
