@@ -56,6 +56,7 @@ handbook/getting-started
 handbook/architecture
 handbook/site-manifest
 handbook/brand-kit
+handbook/sign-on
 handbook/make-it-yours
 handbook/upgrade
 handbook/from-scratch

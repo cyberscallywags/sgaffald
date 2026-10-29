@@ -6,6 +6,7 @@ import tomllib
 from functools import lru_cache
 from importlib.metadata import packages_distributions, version
 from pathlib import Path
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -52,6 +53,12 @@ class Mobile(BaseModel):
     app_id: str
 
 
+class Auth(BaseModel):
+    """How people sign on, unless the AUTH_MODE setting overrides it."""
+
+    mode: Literal["off", "mock"] = "mock"
+
+
 class Meta(BaseModel):
     """Everything in brand.toml that the services use, plus the package version."""
 
@@ -64,6 +71,7 @@ class Meta(BaseModel):
     repository: Repository
     mobile: Mobile
     theme: Theme  # [theme.docs] is for the docs build only (scripts/sync_meta.py)
+    auth: Auth = Auth()
 
 
 def package_version() -> str:

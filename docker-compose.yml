@@ -13,6 +13,11 @@ x-app-env: &app-env
   CORS_ORIGINS: ${CORS_ORIGINS:-[]}
   API_URL: http://api:8000
   DOCS_URL: ${DOCS_URL:-http://localhost:8200}
+  # Sign-on (app.api.auth); unset means brand.toml's [auth] mode and the built-in defaults
+  AUTH_MODE: ${AUTH_MODE:-}
+  AUTH_SECRET: ${AUTH_SECRET:-}
+  AUTH_DEMO_PASSWORD: ${AUTH_DEMO_PASSWORD:-}
+  AUTH_ALLOW_MOCK: ${AUTH_ALLOW_MOCK:-}
 
 x-http-health: &http-health
   interval: 5s

@@ -18,6 +18,7 @@ class Item(ItemIn):
 
     id: str = Field(default_factory=lambda: str(uuid4()))
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_by: str | None = Field(None, description="`id` of the member who added it.")
 
 
 class Health(BaseModel):
@@ -26,6 +27,44 @@ class Health(BaseModel):
     status: str
     env: str
     neo4j: bool
+
+
+# ---------------------------------------------------------------- sign-on
+# Mock sign-on (app.api.auth) issues these; a real identity provider would issue the same shapes.
+
+Role = Literal["member", "admin"]
+Email = Annotated[str, Field(pattern=r"^[^@\s]+@[^@\s]+$", examples=["ada@example.org"])]
+
+
+class Member(BaseModel):
+    """A signed-in person, as the API and both frontends see them."""
+
+    id: str = Field(pattern=r"^[a-z0-9][a-z0-9_-]*$", examples=["ada"])
+    name: str
+    email: Email
+    role: Role = "member"
+
+
+class LoginIn(BaseModel):
+    """Credentials for `POST /auth/login`. In mock mode every demo member shares one password."""
+
+    email: Email
+    password: str = Field(min_length=1, examples=["demo"])
+
+
+class Session(BaseModel):
+    """What `POST /auth/login` returns: send `token` as `Authorization: Bearer <token>`."""
+
+    token: str
+    member: Member
+    expires_at: datetime
+
+
+class AuthInfo(BaseModel):
+    """How the frontends should offer sign-on, added to `GET /site` by the API."""
+
+    mode: Literal["off", "mock"]
+    demo_users: list[Member] = []  # mock mode only: the "Sign in as…" shortcuts
 
 
 class AskIn(BaseModel):
@@ -48,7 +87,7 @@ HexColour = Annotated[str, Field(pattern=r"^#[0-9a-fA-F]{6}$")]
 Slug = Annotated[str, Field(pattern=r"^[a-z0-9]+(-[a-z0-9]+)*$")]
 
 # Routes the frontends own; a content page may not shadow them.
-RESERVED_SLUGS = frozenset({"welcome", "about", "items", "sign-in"})
+RESERVED_SLUGS = frozenset({"welcome", "about", "items", "sign-in", "login", "logout", "account"})
 
 
 class Theme(BaseModel):
@@ -109,6 +148,8 @@ class Site(BaseModel):
     pages: list[ContentPage] = []  # project pages listed in the sidebar, in order
     # Deployment-specific, so it comes from the DOCS_URL setting, not site.json.
     docs_url: str | None = None
+    # Added by the API from the sign-on settings; never stored in site.json.
+    auth: AuthInfo | None = None
 
     @model_validator(mode="after")
     def _unique_page_slugs(self) -> Site:

@@ -31,10 +31,11 @@ class ItemRepo:
             database_=self.database,
         )
 
-    async def create(self, data: ItemIn) -> Item:
-        item = Item(**data.model_dump())
+    async def create(self, data: ItemIn, created_by: str | None = None) -> Item:
+        item = Item(**data.model_dump(), created_by=created_by)
         await self.driver.execute_query(
-            "CREATE (i:Item {id: $id, name: $name, created_at: $created_at})",
+            "CREATE (i:Item {id: $id, name: $name, created_at: $created_at, "
+            "created_by: $created_by})",
             item.model_dump(),
             database_=self.database,
         )
@@ -51,6 +52,7 @@ class ItemRepo:
                 id=r["i"]["id"],
                 name=r["i"]["name"],
                 created_at=r["i"]["created_at"].to_native(),
+                created_by=r["i"].get("created_by"),
             )
             for r in records
         ]

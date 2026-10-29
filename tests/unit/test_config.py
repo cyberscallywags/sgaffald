@@ -22,3 +22,15 @@ def test_cors_origins_parse_from_json(monkeypatch):
     monkeypatch.setenv("CORS_ORIGINS", '["capacitor://localhost","http://localhost"]')
     s = Settings(_env_file=None)
     assert s.cors_origins == ["capacitor://localhost", "http://localhost"]
+
+
+def test_an_empty_sign_on_variable_keeps_the_default(monkeypatch):
+    # docker compose passes unset variables as empty strings
+    from app.config import DEFAULT_AUTH_SECRET
+
+    for name in ("AUTH_MODE", "AUTH_SECRET", "AUTH_ALLOW_MOCK"):
+        monkeypatch.setenv(name, "")
+    settings = Settings()
+    assert settings.auth_mode is None
+    assert settings.auth_secret.get_secret_value() == DEFAULT_AUTH_SECRET
+    assert settings.auth_allow_mock is False

@@ -60,3 +60,8 @@ crest_alt = "The Cyber Scallywags crest: a wolf in a flat cap above the words Pl
 [docs]
 # Shown in the docs portal's hero kicker and the manual's, e.g. "Cyber Scallywags · Docs portal".
 kicker = "Cyber Scallywags"
+
+[auth]
+# Sign-on: "mock" (demo members in content/users.json, signed tokens) or "off" (every request
+# is a local member). The AUTH_MODE setting overrides it per environment.
+mode = "off"

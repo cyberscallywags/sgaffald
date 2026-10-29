@@ -12,7 +12,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-api = ["fastapi>=0.120", "uvicorn[standard]>=0.38", "pydantic-ai-slim>=1.0"]
+api = [
+    "fastapi>=0.120",
+    "uvicorn[standard]>=0.38",
+    "pydantic-ai-slim>=1.0",
+    "pyjwt>=2.10",
+]
 ui = [
     "fastapi>=0.120",
     "uvicorn[standard]>=0.38",

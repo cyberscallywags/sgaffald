@@ -38,3 +38,6 @@ hero_alt = "Example Project: replace this banner with your own"
 
 [docs]
 kicker = "Example Organisation"
+
+[auth]
+mode = "off"

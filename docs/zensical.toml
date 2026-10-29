@@ -40,6 +40,7 @@ nav = [
     "handbook/architecture.md",
     "handbook/site-manifest.md",
     "handbook/brand-kit.md",
+    "handbook/sign-on.md",
     "handbook/make-it-yours.md",
     "handbook/upgrade.md",
     "handbook/from-scratch.md",
