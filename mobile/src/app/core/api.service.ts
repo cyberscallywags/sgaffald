@@ -4,89 +4,10 @@ import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 
-/** Mirrors app.models: keep in step with the Pydantic contract. */
-export interface Item {
-  id: string;
-  name: string;
-  created_at: string;
-  /** `id` of the member who added it. */
-  created_by?: string | null;
-}
+import type { Health, Item, Session, Site } from './api.types';
 
-export interface Member {
-  id: string;
-  name: string;
-  email: string;
-  role: 'member' | 'admin';
-}
-
-/** What POST /auth/login returns; `token` goes in `Authorization: Bearer <token>`. */
-export interface Session {
-  token: string;
-  member: Member;
-  expires_at: string;
-}
-
-/** How to offer sign-on: `mock` lists demo members; `off` means everyone can write. */
-export interface AuthInfo {
-  mode: 'off' | 'mock';
-  demo_users: Member[];
-}
-
-export interface Health {
-  status: string;
-  env: string;
-  neo4j: boolean;
-}
-
-export interface Theme {
-  primary: string;
-  secondary: string;
-  tertiary: string;
-  font_family: string;
-}
-
-export interface Brand {
-  name: string;
-  tagline: string;
-  collective: string;
-  collective_url: string | null;
-}
-
-export interface SectionItem {
-  title: string;
-  body?: string | null;
-  icon?: string | null;
-  url?: string | null;
-}
-
-export interface Section {
-  kind: 'text' | 'list' | 'steps' | 'cards';
-  heading?: string | null;
-  body?: string | null;
-  items: SectionItem[];
-}
-
-export interface ContentPage {
-  slug: string;
-  title: string;
-  icon: string;
-  summary?: string | null;
-  sections: Section[];
-}
-
-/** GET /site: brand, theme and pages, shared with the FastUI frontend. */
-export interface Site {
-  brand: Brand;
-  theme: Theme;
-  welcome: ContentPage;
-  about: ContentPage;
-  pages: ContentPage[];
-  /** Docs portal URL from the API's DOCS_URL setting; null hides the menu link. */
-  docs_url?: string | null;
-  /** Added by the API from its sign-on settings. */
-  auth?: AuthInfo | null;
-}
+// The API's shapes, generated from src/app/models.py by `uv run task types`; import them from here.
+export type * from './api.types';
 
 /** The app's only way to reach data: HTTP to the API, never Neo4j. */
 @Injectable({ providedIn: 'root' })

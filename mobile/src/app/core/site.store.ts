@@ -23,7 +23,7 @@ export class SiteStore {
   constructor() {
     effect(() => applyTheme(this.site().theme, this.document.documentElement));
     effect(() => {
-      const name = this.site().brand.name;
+      const name = this.site().brand.name ?? meta.name; // the API fills it; the type allows null
       const page = this.pageTitle();
       this.title.setTitle(page ? `${page} · ${name}` : name);
     });

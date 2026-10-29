@@ -91,6 +91,7 @@ docs_build = "python -m app.docgen && zensical build --strict --clean -f docs/ze
 clean = { cmd = "rm -rf .venv .pytest_cache .ruff_cache .coverage coverage.xml htmlcov docs/_build docs/.cache mobile/node_modules mobile/.angular mobile/www && find . -name __pycache__ -type d -prune -exec rm -rf {} +", help = "Delete every regenerable directory (then uv sync to rebuild .venv)" }
 changelog = { cmd = "git-cliff -o CHANGELOG.md", help = "Regenerate CHANGELOG.md from the commit prefixes (cliff.toml)" }
 smoke = { cmd = "python scripts/template_smoke.py", help = "Copy the template, swap in the neutral brand, and check the gate passes with no trace of the old brand" }
+types = { cmd = "python -m app.typegen", help = "Regenerate the mobile app's TypeScript types from the Pydantic models" }
 sync = { cmd = "python scripts/sync_meta.py", help = "Copy the brand (brand/) into the files that cannot read it, and check it" }
 lint = { cmd = "ruff check . && ruff format --check .", help = "Ruff lint + format check" }
 format = { cmd = "ruff format . && ruff check --fix .", help = "Auto-format and fix" }
