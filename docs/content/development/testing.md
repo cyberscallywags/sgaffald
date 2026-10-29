@@ -36,3 +36,18 @@ Every layer is tested, from pure functions to a real phone browser against the f
 
 `integration` and `e2e` tests are marked and skipped by `task test`. Unit tests run with
 coverage; CI uploads `coverage.xml` to Codecov.
+
+## TODO comments
+
+Mark unfinished work with `TODO`, `FIXME` or `HACK`. In Python, ruff (`task lint`, and so
+pre-commit and CI) checks TODOs: the tag in capitals, an author, a colon, then the text.
+
+```python
+# TODO(sam): page the results once there are more than a few hundred
+```
+
+A TODO need not link an issue. Ruff accepts only `TODO` in Python (it rejects `FIXME`, and
+does not check `HACK`); the mobile app and other files can use all three. VS Code offers to install the recommended Todo Tree extension
+when you open the repository; its sidebar view lists every tagged comment, grouped by file.
+Without the extension, search the workspace (Cmd+Shift+F, or Ctrl+Shift+F) with regex on for
+`TODO|FIXME|HACK`.
