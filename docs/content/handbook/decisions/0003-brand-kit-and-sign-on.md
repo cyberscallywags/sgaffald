@@ -1,7 +1,9 @@
 # Brand kit, template handbook and mock sign-on: proposal
 
-Status: **accepted**, being carried out in phases (see the table at the end). Recorded
-29 October 2026; it replaced two earlier drafts, which remain in the git history.
+Status: **accepted and largely carried out** (29 October 2026); see
+[Outcome](#outcome) at the end for what was delivered, what changed on the way, and what is
+still open. Recorded 29 October 2026; it replaced two earlier drafts, which remain in the git
+history.
 
 Written: 29 October 2026. Scope: how Sgaffald is re-branded for a new project, how its
 documentation is organised, a simulated sign-on across API, web UI and mobile, and what it would
@@ -557,3 +559,34 @@ Recorded 29 October 2026.
 | Web UI token storage | **`HttpOnly`, `SameSite=Lax` cookie** set by the UI server | §4.4 |
 | Copier | **Later (phase 5)**; until then "Use this template" + brand swap + `task sync` | §5.2 items 6 and 8 |
 | Python package name | **Rename to `app`** once in the template (phase 0) | §2.4 |
+
+## Outcome
+
+Carried out on 29 October 2026, one branch per phase, each merged with the full gate green.
+
+| Phase | Branch | Delivered |
+|---|---|---|
+| 0 | `refactor/package-app` | The package is `app`; the distribution is named after the slug. The admin script became `admin/main.py`, because Streamlit puts the script's folder on `sys.path`, where `app.py` shadowed the package |
+| 1 | `refactor/brand-kit` | `brand/` with `brand.toml`, `[theme.docs]`, `[images]`, `[docs]`; image copies, `--brand-*` tokens, brand pages and brand checks in `task sync`; `BRAND_DIR`; the neutral example brand |
+| 2 | `docs/handbook-split` | `handbook/` and `project/`; `HANDBOOK` in `sync_meta.py` writes both navigations; `include_handbook`; the reports became these decision records |
+| 3 | `feature/mock-sign-on-api`, `feature/mock-sign-on-frontends` | Mock sign-on in the API, web UI (`HttpOnly` cookie, account panel), mobile app (interceptor, guard, account menu) and admin portal; on by default |
+| 4 | `task/open-source-readiness` | MIT licence and brand terms, community files, Neo4j Community default, Dependabot, CodeQL, Scorecard, signed images with SBOMs, the commit-msg hook, the changelog, the template smoke test |
+| 5 | `feature/generated-api-types`, `feature/in-memory-storage`, `feature/copier-template`, `feature/new-entity-scaffold` | Generated mobile types, `STORAGE=memory` and `task dev`, Copier with `scripts/new_project.py`, `task new_entity` and `app.domain` |
+
+Changed on the way:
+
+- **Handbook placeholders** were dropped. Handbook pages never name the project instead, and a
+  unit test enforces it; the project's values are on the generated Project metadata page.
+- **Mock sign-on in production**: the default-secret check applies only when tokens are issued
+  (`mock`), since `off` issues none.
+- **The smoke test found** tests that passed only with the default brand's values and a menu
+  spec that listed features by hand; both now read what they need.
+
+Not done yet:
+
+- `task brand_images` (deriving image sizes with Pillow) and `@capacitor/assets` icons.
+- Copier questions to leave out services (mobile, admin, AI, docs).
+- A Keycloak `auth` compose profile for trying OIDC locally.
+- The dev container, docs on GitHub Pages, README screenshots, axe accessibility checks and
+  the i18n hook from section 5.4.
+- The dependency-group split from [0002](0002-storage-and-reuse.md).
