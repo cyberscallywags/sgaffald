@@ -8,8 +8,9 @@ stage.
 
 ```mermaid
 flowchart LR
-    s1[1 Contract] --> s2[2 API] --> s3[3 Graph] --> s4[4 Web UI] --> s5[5 Mobile]
-    s5 --> s6[6 Admin + AI] --> s7[7 Docs] --> s8[8 Delivery] --> s9[9 Brand kit]
+    s1[1 Contract] --> s2[2 API] --> s3[3 Graph] --> s4[4 Web UI] --> s5[5 Sign-on]
+    s5 --> s6[6 Mobile] --> s7[7 Admin + AI] --> s8[8 Docs] --> s9[9 Delivery]
+    s9 --> s10[10 Brand kit]
 ```
 
 ## 1. The contract
@@ -66,7 +67,22 @@ not code.
 
 **Check:** `uv run task up`, then <http://localhost:8080>.
 
-## 5. The mobile app
+## 5. Sign-on
+
+Who is signed in, before any real identity provider exists: demo members, signed tokens, and
+one dependency that every write asks for.
+
+| Adds | Files |
+|---|---|
+| Models | `Member`, `LoginIn`, `Session`, `AuthInfo` in `src/app/models.py` |
+| API | `src/app/api/auth.py`: `POST /auth/login`, `GET /auth/me`, `CurrentMember` |
+| Members | `brand/content/users.json` |
+| Tests | `tests/unit/test_auth.py` |
+
+**Check:** `uv run task test`; then, with `AUTH_MODE=mock`, `POST /items` without a token
+returns 401. See [Sign-on](sign-on.md).
+
+## 6. The mobile app
 
 An Ionic + Angular app that renders the same manifest, built and tested inside Docker so
 nobody needs Node installed.
@@ -79,7 +95,7 @@ nobody needs Node installed.
 
 **Check:** `uv run task test_mobile`, then <http://localhost:8100> after `task up`.
 
-## 6. Admin and AI
+## 7. Admin and AI
 
 An operator portal that reads Neo4j directly, and a Pydantic AI agent with one tool.
 
@@ -91,7 +107,7 @@ An operator portal that reads Neo4j directly, and a Pydantic AI agent with one t
 
 **Check:** <http://localhost:8501> after `task up`.
 
-## 7. The docs
+## 8. The docs
 
 Reference pages generated from the code, and one set of Markdown pages built by two engines.
 
@@ -104,7 +120,7 @@ Reference pages generated from the code, and one set of Markdown pages built by 
 
 **Check:** `uv run task docs_serve`, then <http://localhost:8200>.
 
-## 8. Delivery
+## 9. Delivery
 
 Hooks that catch mistakes before review, CI that runs the full gate, and a release workflow
 that publishes images.
@@ -118,7 +134,7 @@ that publishes images.
 
 **Check:** `uv run task verify`.
 
-## 9. The brand kit
+## 10. The brand kit
 
 Everything project-specific moves into one folder, and a script copies it to the places that
 cannot read it.
@@ -136,6 +152,6 @@ every file the neutral brand would change. See [Brand kit](brand-kit.md).
 ## Where to stop
 
 A project that needs less can stop after any stage. Stages 1–3 make an API service, 1–4 a web
-application, and 5–7 are independent of each other. Remove a service by deleting its folder,
+application, and 6–8 are independent of each other. Remove a service by deleting its folder,
 its compose service and its CI job; the tests that need it fail loudly if anything still
 refers to it.
