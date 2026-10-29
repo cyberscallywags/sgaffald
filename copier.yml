@@ -1,0 +1,72 @@
+# Copier: make a new project from this template, and later pull template updates into it.
+#     uvx copier copy --trust gh:cyberscallywags/sgaffald my-project
+#     uvx copier update --trust        # in the project, to apply a newer template version
+# --trust lets Copier run scripts/new_project.py (below), which brands the copy.
+_min_copier_version: "9.4"
+_answers_file: .copier-answers.yml
+_templates_suffix: .jinja      # only *.jinja files are templated; the rest is copied as it is
+_exclude:
+  - .git
+  - copier.yml
+_tasks:
+  - command:
+      - "{{ _copier_python }}"
+      - scripts/new_project.py
+      - --name
+      - "{{ project_name }}"
+      - --slug
+      - "{{ project_slug }}"
+      - --description
+      - "{{ description }}"
+      - --organisation
+      - "{{ organisation }}"
+      - --organisation-url
+      - "{{ organisation_url }}"
+      - --owner
+      - "{{ github_owner }}"
+      - --repository
+      - "{{ repository }}"
+      - --app-id
+      - "{{ app_id }}"
+      - --primary
+      - "{{ primary_colour }}"
+    when: "{{ _copier_operation == 'copy' }}"   # an update keeps the project's own brand
+
+project_name:
+  type: str
+  help: The project's display name
+  default: Example Project
+project_slug:
+  type: str
+  help: Lower-case name for the distribution, images and compose project
+  default: "{{ project_name | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
+  validator: "{% if not (project_slug | regex_search('^[a-z][a-z0-9-]*$')) %}lower-case letters, digits and hyphens{% endif %}"
+description:
+  type: str
+  help: One line about the project
+  default: "A full-stack project: FastAPI, FastUI, Streamlit, Ionic and Neo4j"
+organisation:
+  type: str
+  help: The organisation behind it
+  default: "{{ project_name }}"
+organisation_url:
+  type: str
+  help: Its website (may be empty)
+  default: ""
+github_owner:
+  type: str
+  help: GitHub owner (user or organisation) of the new repository
+  default: "{{ organisation | lower | regex_replace('[^a-z0-9]+', '-') | trim('-') }}"
+repository:
+  type: str
+  help: GitHub repository name
+  default: "{{ project_slug }}"
+app_id:
+  type: str
+  help: Mobile app id, reverse-DNS with no hyphens
+  default: "org.example.{{ project_slug | replace('-', '') }}"
+primary_colour:
+  type: str
+  help: Primary brand colour, #rrggbb
+  default: "#264653"
+  validator: "{% if not (primary_colour | regex_search('^#[0-9a-fA-F]{6}$')) %}six-digit hex, e.g. #3d405b{% endif %}"
