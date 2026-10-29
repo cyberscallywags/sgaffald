@@ -84,7 +84,21 @@ rename. `uv run task sync` names the distribution after `project.slug` (`[projec
 
 ## 5. Model the domain
 
-Replace the sample `Item` with your own models, for example `Volunteer` and `Opportunity`:
+Add each of the project's things with the scaffold, for example `Volunteer` and `Opportunity`:
+
+```bash
+uv run task new_entity Volunteer
+uv run task new_entity Opportunity --plural Opportunities
+```
+
+Each gets one module, `src/app/domain/<plural>.py`, with its models, storage (Neo4j, or memory
+with `STORAGE=memory`) and routes (`GET` and a signed-in `POST` on `/<plural>`), and its tests;
+the web UI gives it a page and a navbar link, the mobile app a page and a menu entry, and the
+docs and the mobile app's types list its models. It starts with one field, `name`: add yours to
+`<Name>In`, run `uv run task types`, then `uv run task test` and `uv run task test_mobile`.
+
+The sample `Item` predates the scaffold and lives in the shared files. Once the project's own
+entities exist, remove it from:
 
 - `models.py`: `Item` / `ItemIn`
 - `db.py`: `ItemRepo`

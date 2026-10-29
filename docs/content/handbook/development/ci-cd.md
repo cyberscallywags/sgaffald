@@ -27,8 +27,9 @@ commit messages.
 ## The template smoke test
 
 `uv run task smoke` (`scripts/template_smoke.py`, the `smoke` job) copies the repository,
-replaces `brand/` with `examples/brands/neutral/`, gives it a new name, slug, organisation,
-repository and colour, and runs `task sync`, `uv lock`, `task lint` and `task test` in the
+makes it a new project with `scripts/new_project.py` (what `copier copy` runs: the neutral
+brand with a new name, organisation and colour), adds an entity with
+`scripts/new_entity.py Volunteer`, and runs `uv lock`, `task lint` and `task test` in the
 copy. It then fails if the copy still names the original brand's organisation anywhere
 outside the decision records, the licence and the changelog. It proves on every pull request
 that a project can be made from the template, and keeps the tests free of any one brand's

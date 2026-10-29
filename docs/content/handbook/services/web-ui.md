@@ -13,6 +13,7 @@ talks to the API over HTTP only, never to Neo4j.
 | `/login` | Sign in: the email and password form, and one-click "Sign in as…" demo members |
 | `/login/as/<id>` | One-click sign-in as a demo member (mock sign-on only) |
 | `/logout` | Sign out |
+| `/<plural>` | A list-and-add page for each entity in `src/app/domain/`, with a navbar link |
 
 The navbar mirrors the mobile side menu: welcome, the manifest's pages, Items, then About and
 Docs on the right. `render_section` turns each manifest section into FastUI components, the
