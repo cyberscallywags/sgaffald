@@ -1,0 +1,67 @@
+# The brand: who the project is and what it looks like. Edit this file (and the rest of
+# brand/), then run `uv run task sync`. Pages and copy live in content/site.json; the version
+# lives in pyproject.toml. Every field is described in the brand kit page of the docs.
+
+[project]
+name = "Sgaffald"  # display name: titles, app name, docs
+slug = "sgaffald"  # lower-case: distribution, images, compose project, cache keys
+description = "Cyber Scallywags base template: FastAPI, FastUI, Streamlit, Ionic and Neo4j"
+year = 2026  # copyright year
+
+[organisation]
+name = "Cyber Scallywags"
+url = "https://cyberscallywags.com"
+motto = "Play • Learn • Share • Grow"
+
+[repository]
+# GitHub owner and repository: README badges and the release image prefix,
+# ghcr.io/<owner>/<name> (lower-cased, like the release workflow).
+owner = "cyberscallywags"
+name = "sgaffald"
+
+[mobile]
+app_id = "com.cyberscallywags.sgaffald"  # Capacitor appId, reverse-DNS
+
+[theme]
+# The app palette: Bootstrap on the web UI, Ionic on mobile. Served by GET /site.
+primary = "#1b4965"
+secondary = "#5fa8d3"
+tertiary = "#e4572e"
+
+[theme.docs]
+# Both docs sites. Every key is optional: a brand that leaves this table out gets docs in its
+# app palette on neutral dark surfaces. These values are the cyberscallywags.com neon look.
+scheme = "dark"  # first scheme the docs open in: dark or light; readers can switch
+accent = "#00e5ff"  # dark scheme: links, h2, primary buttons, gradient start
+accent_2 = "#ff007f"  # dark scheme: hover, highlights, gradient end
+accent_ink = "#00707d"  # light scheme: links (must read on white)
+accent_2_ink = "#c2005f"  # light scheme: hover, visited links
+background = "#0b0e14"
+surface = "#161b22"  # header, cards, tables
+card = "#1d242e"  # code blocks
+border = "#30363d"
+text = "#e6edf3"
+text_muted = "#cbd5e1"
+text_subtle = "#94a3b8"
+
+[images]
+# Files in brand/images. `uv run task sync` copies each one to assets/brand/<key>.<ext> in the
+# docs, the web UI and the mobile app. Leave an optional key out to hide that image.
+logo = "logo.svg"  # optional: full logo
+mark = "mark.png"  # square mark: docs and web UI navbars (PNG at least 128x128, or SVG)
+favicon = "favicon.png"  # browser tab (PNG at least 32x32)
+hero = "hero.webp"  # optional: README banner
+hero_alt = "Sgaffald: scaffolding for the next project, ready to be renamed and grown"
+crest = "crest.webp"  # optional: emblem on the docs home and the manual
+crest_alt = "The Cyber Scallywags crest: a wolf in a flat cap above the words Play, Learn, Share, Grow"
+# app_icon = "app-icon.png"  # optional: native app icon, PNG 1024x1024
+# splash = "splash.png"  # optional: native splash screen, PNG 2732x2732
+
+[docs]
+# Shown in the docs portal's hero kicker and the manual's, e.g. "Cyber Scallywags · Docs portal".
+kicker = "Cyber Scallywags"
+
+[auth]
+# Sign-on: "mock" (demo members in content/users.json, signed tokens) or "off" (every request
+# is a local member). The AUTH_MODE setting overrides it per environment.
+mode = "mock"

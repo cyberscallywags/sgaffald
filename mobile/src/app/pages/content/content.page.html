@@ -4,6 +4,9 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ page()?.title ?? brand().name }}</ion-title>
+    <ion-buttons slot="end">
+      <app-account-menu></app-account-menu>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

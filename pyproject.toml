@@ -9,10 +9,15 @@ dependencies = [
     "pydantic-settings>=2.11",
     "neo4j>=6.0",
     "httpx>=0.28",
+    "pyjwt>=2.10",  # sign-on tokens; app.domain modules use them and the UI reads those modules
 ]
 
 [project.optional-dependencies]
-api = ["fastapi>=0.120", "uvicorn[standard]>=0.38", "pydantic-ai-slim>=1.0"]
+api = [
+    "fastapi>=0.120",
+    "uvicorn[standard]>=0.38",
+    "pydantic-ai-slim>=1.0",
+]
 ui = [
     "fastapi>=0.120",
     "uvicorn[standard]>=0.38",
@@ -33,6 +38,7 @@ dev = [
     "pre-commit>=4.3",
     "taskipy>=1.14",
     "watchfiles>=1.1",
+    "git-cliff>=2.10",
 ]
 e2e = ["pytest-playwright>=0.10.0"]  # browser tests (task test_e2e)
 load = ["locust>=2.42"]  # load tests (task load)
@@ -60,9 +66,14 @@ default-groups = ["dev", "docs"]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-# Installed services (the Docker images) read project identity from inside the package.
+# The import package is always `app`; the distribution is named after project.slug.
+[tool.hatch.build.targets.wheel]
+packages = ["src/app"]
+
+# Installed services (the Docker images) read the brand from inside the package.
 [tool.hatch.build.targets.wheel.force-include]
-"project.toml" = "sgaffald/project.toml"
+"brand/brand.toml" = "app/brand/brand.toml"
+"brand/content" = "app/brand/content"
 
 # ---------------------------------------------------------------- taskipy
 # Test env:   uses .env.test (committed, throwaway secrets)
@@ -74,11 +85,16 @@ use_vars = true
 compose_test = "docker compose --env-file .env.project --env-file .env.test"
 compose_prod = "docker compose --env-file .env.project --env-file .env.production -f docker-compose.yml -f docker-compose.prod.yml"
 # Portal first (its --clean empties the site dir), then the manual into site/manual.
-docs_build = "python -m sgaffald.docgen && zensical build --strict --clean -f docs/zensical.toml && sphinx-build -W --keep-going -q -b html -c docs/sphinx docs/content docs/_build/site/manual"
+docs_build = "python -m app.docgen && zensical build --strict --clean -f docs/zensical.toml && sphinx-build -W --keep-going -q -b html -c docs/sphinx docs/content docs/_build/site/manual"
 
 [tool.taskipy.tasks]
 clean = { cmd = "rm -rf .venv .pytest_cache .ruff_cache .coverage coverage.xml htmlcov docs/_build docs/.cache mobile/node_modules mobile/.angular mobile/www && find . -name __pycache__ -type d -prune -exec rm -rf {} +", help = "Delete every regenerable directory (then uv sync to rebuild .venv)" }
-sync = { cmd = "python scripts/sync_meta.py", help = "Copy project.toml and site.json into the files that cannot read them" }
+dev = { cmd = "python scripts/dev.py", help = "API + web UI with live reload, items in memory: no Docker, no Neo4j" }
+changelog = { cmd = "git-cliff -o CHANGELOG.md", help = "Regenerate CHANGELOG.md from the commit prefixes (cliff.toml)" }
+smoke = { cmd = "python scripts/template_smoke.py", help = "Copy the template, swap in the neutral brand, and check the gate passes with no trace of the old brand" }
+new_entity = { cmd = "python scripts/new_entity.py", help = "Add an entity to every layer, e.g. task new_entity Volunteer" }
+types = { cmd = "python -m app.typegen", help = "Regenerate the mobile app's TypeScript types from the Pydantic models" }
+sync = { cmd = "python scripts/sync_meta.py", help = "Copy the brand (brand/) into the files that cannot read it, and check it" }
 lint = { cmd = "ruff check . && ruff format --check .", help = "Ruff lint + format check" }
 format = { cmd = "ruff format . && ruff check --fix .", help = "Auto-format and fix" }
 hooks = { cmd = "pre-commit run --all-files", help = "Run every pre-commit hook" }
@@ -88,8 +104,8 @@ test_int ={ cmd = "pytest -m integration --no-cov", help = "Integration tests ag
 test_e2e = { cmd = "pytest -m e2e --no-cov", help = "Playwright browser tests of UI, admin + mobile (needs task up and uv sync --group e2e)" }
 docs = { cmd = "{docs_build}", help = "Generate the reference pages and build both docs sites into docs/_build/site" }
 docs_serve = { cmd = "{docs_build} && python -m http.server 8200 -d docs/_build/site", help = "Build, then serve the portal (/) and manual (/manual/) on http://localhost:8200" }
-docs_live = { cmd = "python -m sgaffald.docgen && zensical serve -f docs/zensical.toml -a localhost:8201", help = "Live-reload the Zensical portal on :8201 while writing" }
-docs_live_manual = { cmd = "python -m sgaffald.docgen && sphinx-autobuild -c docs/sphinx docs/content docs/_build/live-manual --port 8202", help = "Live-reload the Sphinx manual on :8202 while writing" }
+docs_live = { cmd = "python -m app.docgen && zensical serve -f docs/zensical.toml -a localhost:8201", help = "Live-reload the Zensical portal on :8201 while writing" }
+docs_live_manual = { cmd = "python -m app.docgen && sphinx-autobuild -c docs/sphinx docs/content docs/_build/live-manual --port 8202", help = "Live-reload the Sphinx manual on :8202 while writing" }
 test_mobile = { cmd = "docker build -f docker/mobile.Dockerfile --target test .", help = "Mobile lint + unit tests (in a container, no Node needed)" }
 up = { cmd = "{compose_test} up -d --build --wait", help = "Build + start test stack, wait for healthy" }
 down = { cmd = "{compose_test} down -v", help = "Stop test stack and drop volumes" }
@@ -111,11 +127,11 @@ markers = [
     "integration: needs the docker compose stack running (task up)",
     "e2e: Playwright browser tests; needs the stack and `playwright install chromium`",
 ]
-addopts = "-ra --strict-markers --cov=sgaffald --cov-report=term-missing"
+addopts = "-ra --strict-markers --cov=app --cov-report=term-missing"
 norecursedirs = ["tests/load"]
 
 [tool.coverage.run]
-omit = ["src/sgaffald/admin/*"]
+omit = ["src/app/admin/*"]
 
 # ---------------------------------------------------------------- ruff
 [tool.ruff]

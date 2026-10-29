@@ -4,6 +4,9 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Items</ion-title>
+    <ion-buttons slot="end">
+      <app-account-menu></app-account-menu>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -19,7 +22,7 @@
   </ion-refresher>
 
   <ion-text color="medium">
-    <p class="ion-padding-horizontal">Add an item; it is stored in Neo4j via the API.</p>
+    <p class="ion-padding-horizontal">Items are stored in Neo4j via the API.</p>
   </ion-text>
 
   <ion-list inset>
@@ -35,24 +38,32 @@
     </ion-item>
   </ion-list>
 
-  <form [formGroup]="form" (ngSubmit)="add()">
-    <ion-list inset>
-      <ion-item>
-        <ion-input
-          label="Name"
-          labelPlacement="stacked"
-          placeholder="New item"
-          [formControl]="name"
-          [counter]="true"
-          [maxlength]="200"
-          errorText="Name is required"
-        ></ion-input>
-      </ion-item>
-    </ion-list>
-    <div class="ion-padding-horizontal">
-      <ion-button type="submit" expand="block" [disabled]="saving()">Add</ion-button>
+  @if (canAdd()) {
+    <form [formGroup]="form" (ngSubmit)="add()">
+      <ion-list inset>
+        <ion-item>
+          <ion-input
+            label="Name"
+            labelPlacement="stacked"
+            placeholder="New item"
+            [formControl]="name"
+            [counter]="true"
+            [maxlength]="200"
+            errorText="Name is required"
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+      <div class="ion-padding-horizontal">
+        <ion-button type="submit" expand="block" [disabled]="saving()">Add</ion-button>
+      </div>
+    </form>
+  } @else {
+    <div class="ion-padding-horizontal" data-testid="sign-in-to-add">
+      <ion-button routerLink="/sign-in" [queryParams]="{ returnUrl: '/items' }" expand="block" fill="outline">
+        Sign in to add items
+      </ion-button>
     </div>
-  </form>
+  }
 
   @if (error(); as message) {
     <ion-text color="danger" role="alert">

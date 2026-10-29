@@ -9,7 +9,7 @@ import pytest
 from neo4j import GraphDatabase
 from playwright.sync_api import Page, Playwright, expect
 
-from sgaffald.content import get_site
+from app.content import get_site
 
 pytestmark = pytest.mark.e2e
 
@@ -76,9 +76,40 @@ def test_mobile_items_shows_healthy_api(page: Page, page_errors):
     assert page_errors == []
 
 
-def test_mobile_adds_item_through_api(page: Page, page_errors):
-    name = f"mobile-{uuid4().hex[:8]}"
+def sign_in(page: Page, email: str, password: str, then: str = "/items") -> None:
+    """Through the app's sign-in page, which returns to `then`."""
+    page.goto(f"{MOBILE}/sign-in?returnUrl={then}")
+    page.get_by_label("Email").fill(email)
+    page.get_by_label("Password").fill(password)
+    page.get_by_role("button", name="Sign in").tap()
+    expect(page).to_have_url(re.compile(rf"{re.escape(then)}$"))
+
+
+def test_mobile_signed_out_items_asks_to_sign_in(page: Page, page_errors):
     page.goto(f"{MOBILE}/items")
+    expect(page.get_by_test_id("sign-in-to-add")).to_be_visible()
+    # an ion-button with routerLink renders as a link, not a button
+    page.get_by_test_id("sign-in-to-add").get_by_text("Sign in to add items").tap()
+    expect(page).to_have_url(re.compile(r"/sign-in\?returnUrl=%2Fitems$"))
+    assert page_errors == []
+
+
+def test_mobile_account_menu_shows_the_member_and_signs_out(
+    page: Page, demo_member, demo_password, page_errors
+):
+    sign_in(page, demo_member.email, demo_password)
+    page.locator("app-items [data-testid=account-button]").tap()
+    menu = page.get_by_test_id("account-menu")
+    expect(menu).to_contain_text(demo_member.email)
+    menu.get_by_test_id("sign-out").tap()
+    expect(page).to_have_url(re.compile(r"/welcome$"))
+    expect(page.locator("app-content [data-testid=account-button]")).to_contain_text("Sign in")
+    assert page_errors == []
+
+
+def test_mobile_adds_item_through_api(page: Page, demo_member, demo_password, page_errors):
+    name = f"mobile-{uuid4().hex[:8]}"
+    sign_in(page, demo_member.email, demo_password)
     page.get_by_label("Name").fill(name)
     page.get_by_role("button", name="Add").tap()
     expect(page.get_by_test_id("items")).to_contain_text(name)
@@ -88,7 +119,8 @@ def test_mobile_adds_item_through_api(page: Page, page_errors):
     assert page_errors == []
 
 
-def test_mobile_blank_submit_writes_nothing(page: Page):
+def test_mobile_blank_submit_writes_nothing(page: Page, demo_member, demo_password):
+    sign_in(page, demo_member.email, demo_password)
     posts: list[str] = []
     page.on("request", lambda r: r.method == "POST" and posts.append(r.url))
     page.goto(f"{MOBILE}/items")

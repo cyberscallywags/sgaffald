@@ -17,11 +17,14 @@ import { SectionsComponent } from '../../shared/sections.component';
  * One template for every manifest page: /welcome and /about pass their slug as route data,
  * sidebar pages arrive as /p/:slug. Adding a page means adding it to site.json, not code.
  */
+import { AccountMenuComponent } from '../../shared/account-menu.component';
+
 @Component({
   selector: 'app-content',
   templateUrl: 'content.page.html',
   styleUrls: ['content.page.scss'],
   imports: [
+    AccountMenuComponent,
     IonButton,
     IonButtons,
     IonContent,

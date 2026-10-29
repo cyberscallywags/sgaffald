@@ -10,6 +10,7 @@
       </ion-header>
 
       <ion-content>
+        @if (site().auth?.mode === 'mock') {
         <ion-list lines="none" data-testid="sign-on">
           <ion-menu-toggle [autoHide]="false">
             @if (session.member(); as member) {
@@ -17,7 +18,7 @@
                 <ion-icon slot="start" color="primary" [name]="iconName('person-circle-outline')"></ion-icon>
                 <ion-label>
                   <h3>{{ member.name }}</h3>
-                  <p>{{ member.email }}</p>
+                  <p>{{ member.email }} · {{ member.role }}</p>
                 </ion-label>
                 <ion-button slot="end" fill="clear" size="small" (click)="session.signOut()">
                   Sign out
@@ -31,6 +32,7 @@
             }
           </ion-menu-toggle>
         </ion-list>
+        }
 
         <ion-list lines="none" data-testid="menu">
           <ion-list-header>Project</ion-list-header>

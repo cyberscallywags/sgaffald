@@ -1,0 +1,41 @@
+# About Cyber Scallywags
+
+![The Cyber Scallywags crest: a wolf in a flat cap above the words Cyber Scallywags, Play, Learn, Share, Grow](assets/brand/crest.webp){.brand-crest}
+
+**PLAY • LEARN • SHARE • GROW**
+
+We are a community-led movement helping people explore, learn, practise, and share digital
+skills, data engineering, AI, graph technology, and cybersecurity. Rebellious curiosity
+meets production-grade software craftsmanship.
+
+Born in the Welsh Valleys, an open community commons.
+
+## How we work
+
+| Pillar | What it means |
+|---|---|
+| **Play** | Social clubs and community coding nights |
+| **Learn** | Free, peer-reviewed tutorials |
+| **Share** | Valleys tech projects, built in the open |
+| **Grow** | Mentorship and pathways |
+
+## The clubs
+
+| Club | Focus |
+|---|---|
+| **Pythonista** | Python, from first script to production service |
+| **Graphinista** | Graph technology and connected data |
+| **Datanista** | Data engineering |
+
+## Why Sgaffald
+
+*Sgaffald* is Welsh for scaffold. It is how Cyber Scallywags projects start: tested,
+deployable and documented from the first commit, so anyone can pick one up and join in.
+
+## Find us
+
+- Website: [cyberscallywags.com](https://cyberscallywags.com)
+- Clubs: [cyberscallywags.com/clubs](https://cyberscallywags.com/clubs)
+- Tutorials: [cyberscallywags.com/learn](https://cyberscallywags.com/learn)
+- Events: [cyberscallywags.com/events](https://cyberscallywags.com/events)
+- Manifesto: [cyberscallywags.com/about](https://cyberscallywags.com/about)

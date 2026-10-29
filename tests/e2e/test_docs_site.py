@@ -1,17 +1,22 @@
-"""Real-browser checks of the docs site: Scallywag Neon theme, and images that scale from a
-phone to a desktop. Requires `task up` (or `task docs_serve`) and `playwright install chromium`."""
+"""Real-browser checks of the docs site: the brand's palette and scheme, and images that scale
+from a phone to a desktop. Requires `task up` (or `task docs_serve`) and
+`playwright install chromium`."""
 
 import os
+import tomllib
 
 import pytest
 from playwright.sync_api import Page, expect
 
-from sgaffald.meta import get_meta
+from app.meta import brand_dir, get_meta
 
 pytestmark = pytest.mark.e2e
 
 DOCS = os.getenv("DOCS_URL", "http://localhost:8200")
-NIGHT = "rgb(11, 14, 20)"  # #0b0e14, the cyberscallywags.com background
+PALETTE = tomllib.loads((brand_dir() / "brand.toml").read_text())["theme"].get("docs", {})
+DARK_FIRST = PALETTE.get("scheme", "dark") == "dark"
+BACKGROUND = PALETTE.get("background", "#0b0e14")  # the default in scripts/sync_meta.py
+NIGHT = "rgb({}, {}, {})".format(*(int(BACKGROUND[i : i + 2], 16) for i in (1, 3, 5)))
 
 PAGES = {
     "portal home": "/",
@@ -40,16 +45,18 @@ def test_images_scale_with_the_page(page: Page, path: str, viewport):
     fits_the_screen(page)
 
 
-def test_portal_is_dark_first_with_the_crest(page: Page):
+@pytest.mark.skipif(not DARK_FIRST, reason="the brand's docs open in the light scheme")
+def test_portal_is_dark_first_with_the_brand_hero(page: Page):
     page.goto(DOCS)
-    expect(page.locator("h1#sgaffald")).to_have_text("Sgaffald¶")
+    expect(page.locator(".brand-hero h1")).to_have_text(f"{get_meta().name}¶")
     assert page.evaluate("getComputedStyle(document.body).backgroundColor") == NIGHT
-    crest = page.locator(".csw-hero__crest img")
-    expect(crest).to_be_visible()
-    # the browser picked a WebP from srcset, not the PNG fallback
-    assert crest.evaluate("img => img.currentSrc").endswith(".webp")
+    crest = page.locator(".brand-hero__crest img")
+    if crest.count():
+        expect(crest).to_be_visible()
+        assert "/assets/brand/" in crest.evaluate("img => img.currentSrc")
 
 
+@pytest.mark.skipif(not DARK_FIRST, reason="the brand's docs open in the light scheme")
 def test_manual_is_dark_first_and_links_back_to_the_portal(page: Page):
     page.goto(f"{DOCS}/manual/")
     expect(page).to_have_url(f"{DOCS}/manual/manual.html")

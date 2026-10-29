@@ -1,38 +1,38 @@
-/* Scallywag Neon for Furo: extras beyond the colour variables set in conf.py. */
+/* Furo: extras beyond the colour variables set in conf.py, all from the --brand-* tokens. */
 
-/* Gradient headline like the site's; the rule under the header uses the same gradient. */
+/* Gradient headline; the rule under the announcement uses the same gradient. */
 .content h1 {
   font-weight: 800;
-  background: var(--csw-gradient);
+  background: var(--brand-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 body[data-theme="dark"] .content h2 {
-  color: var(--csw-blue);
+  color: var(--brand-accent);
 }
 
 @media (prefers-color-scheme: dark) {
   body:not([data-theme="light"]) .content h2 {
-    color: var(--csw-blue);
+    color: var(--brand-accent);
   }
 }
 
 .announcement {
   border-bottom: 2px solid transparent;
-  border-image: var(--csw-gradient) 1;
-  font-family: var(--csw-mono);
+  border-image: var(--brand-gradient) 1;
+  font-family: var(--brand-mono);
   font-size: 0.75rem;
   letter-spacing: 0.06em;
 }
 
 .announcement a {
-  color: var(--csw-blue);
+  color: var(--brand-accent);
 }
 
 .sidebar-brand-text {
-  font-family: var(--csw-mono);
+  font-family: var(--brand-mono);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -43,30 +43,30 @@ body[data-theme="dark"] .content h2 {
   border-radius: 50%;
 }
 
-/* sphinx-design cards glow on hover, like the site's cards. */
+/* sphinx-design cards glow on hover. */
 .sd-card {
   border-radius: 0.75rem !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .sd-card:hover {
-  border-color: var(--csw-blue) !important;
-  box-shadow: var(--csw-glow) !important;
+  border-color: var(--brand-accent) !important;
+  box-shadow: var(--brand-glow) !important;
 }
 
 /* Manual home: crest floats right on wide screens, centred above the text on phones. */
-img.csw-crest--float {
+img.brand-crest--float {
   width: min(100%, 14rem);
 }
 
 @media (min-width: 62em) {
-  img.csw-crest--float {
+  img.brand-crest--float {
     float: right;
     margin: 0 0 1rem 2rem;
   }
 }
 
-.content .csw-kicker {
+.content .brand-kicker {
   margin-bottom: 0.25rem;
 }
 
@@ -81,11 +81,11 @@ img.csw-crest--float {
 .mermaid .node polygon,
 .mermaid .node circle,
 .mermaid .node path {
-  stroke: var(--csw-magenta) !important;
+  stroke: var(--brand-accent-2) !important;
 }
 
 body[data-theme="dark"] .mermaid .node rect,
 body[data-theme="dark"] .mermaid .node polygon,
 body[data-theme="dark"] .mermaid .node path {
-  fill: var(--csw-surface) !important;
+  fill: var(--brand-surface) !important;
 }

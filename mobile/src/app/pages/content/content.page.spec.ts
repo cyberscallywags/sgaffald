@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 
 import { ApiService } from '../../core/api.service';
@@ -9,7 +10,7 @@ import { ContentPage } from './content.page';
 function render(slug: string): HTMLElement {
   TestBed.configureTestingModule({
     imports: [ContentPage],
-    providers: [{ provide: ApiService, useValue: { site: () => of(SITE) } }],
+    providers: [provideRouter([]), { provide: ApiService, useValue: { site: () => of(SITE) } }],
   });
   TestBed.inject(SiteStore).load();
   const fixture = TestBed.createComponent(ContentPage);

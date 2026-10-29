@@ -13,7 +13,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-dev --no-install-project --extra ${SERVICE}
-COPY pyproject.toml uv.lock README.md project.toml ./
+COPY pyproject.toml uv.lock README.md ./
+COPY brand ./brand
 COPY src ./src
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-editable --extra ${SERVICE}
@@ -24,6 +25,6 @@ ENV SERVICE=${SERVICE} PATH=/app/.venv/bin:$PATH PYTHONUNBUFFERED=1
 RUN useradd --system --uid 10001 app
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
-COPY docker/entrypoint.sh /entrypoint.sh
 USER app
-ENTRYPOINT ["/entrypoint.sh"]
+# A Python module, not a shell script: no line endings or execute bit to break on Windows
+ENTRYPOINT ["python", "-m", "app.serve"]

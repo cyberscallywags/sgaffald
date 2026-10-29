@@ -1,7 +1,8 @@
 import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import {
   IonBadge,
   IonButton,
@@ -16,6 +17,7 @@ import {
   IonNote,
   IonRefresher,
   IonRefresherContent,
+  IonRouterLink,
   IonText,
   IonTitle,
   IonToolbar,
@@ -23,15 +25,20 @@ import {
 } from '@ionic/angular';
 
 import { ApiService, Health, Item } from '../../core/api.service';
+import { SessionService } from '../../core/session.service';
 import { SiteStore } from '../../core/site.store';
+
+import { AccountMenuComponent } from '../../shared/account-menu.component';
 
 @Component({
   selector: 'app-items',
   templateUrl: 'items.page.html',
   styleUrls: ['items.page.scss'],
   imports: [
+    AccountMenuComponent,
     DatePipe,
     ReactiveFormsModule,
+    RouterLink,
     IonBadge,
     IonButton,
     IonButtons,
@@ -45,6 +52,7 @@ import { SiteStore } from '../../core/site.store';
     IonNote,
     IonRefresher,
     IonRefresherContent,
+    IonRouterLink,
     IonText,
     IonTitle,
     IonToolbar,
@@ -53,6 +61,12 @@ import { SiteStore } from '../../core/site.store';
 export class ItemsPage implements OnInit {
   private readonly api = inject(ApiService);
   private readonly store = inject(SiteStore);
+  private readonly session = inject(SessionService);
+
+  /** Adding needs a member when sign-on is mock; with it off, everyone can add. */
+  readonly canAdd = computed(
+    () => this.store.site().auth?.mode !== 'mock' || this.session.member() !== null,
+  );
 
   readonly health = signal<Health | null>(null);
   readonly items = signal<Item[]>([]);

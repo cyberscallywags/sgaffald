@@ -3,7 +3,7 @@ import meta from './meta.json';
 
 /**
  * Shown until GET /site answers (and when the API is unreachable on first launch). Brand and
- * theme come from meta.json, generated from project.toml and site.json by `uv run task sync`,
+ * theme come from meta.json, generated from brand.toml and site.json by `uv run task sync`,
  * like src/theme/_brand.scss, so the first paint matches.
  */
 export const FALLBACK_SITE: Site = {

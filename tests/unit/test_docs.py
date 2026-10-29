@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from sgaffald import docgen
-from sgaffald.api.main import app
-from sgaffald.config import Settings
-from sgaffald.meta import load_meta
+from app import docgen
+from app.api.main import app
+from app.config import Settings
+from app.meta import load_meta
 
 ROOT = Path(__file__).parents[2]
 DOCS = ROOT / "docs"
@@ -76,14 +76,20 @@ def test_tasks_page_lists_every_task(pages):
 
 
 def test_configuration_lists_the_project_env_file(pages):
-    assert "| `PROJECT_SLUG` | `sgaffald` |" in pages["configuration.md"]
+    assert (
+        f"| `PROJECT_SLUG` | `{load_meta(ROOT / 'brand/brand.toml').slug}` |"
+        in pages["configuration.md"]
+    )
 
 
 def test_project_metadata_page_shows_identity_and_generated_copies(pages):
     text = pages["project-metadata.md"]
-    meta = load_meta(ROOT / "project.toml")
+    meta = load_meta(ROOT / "brand/brand.toml")
     assert meta.name in text and f"`{meta.version}`" in text
+    assert meta.theme.primary in text
     assert "- `mobile/src/app/core/meta.json`" in text
+    assert "- `docs/content/assets/stylesheets/brand.css`" in text
+    assert "- `src/app/ui/static/favicon.png`" in text
 
 
 def test_table_cells_escape_pipes():
@@ -145,6 +151,7 @@ def test_every_page_is_in_the_manual_toctree():
 
 def test_every_referenced_image_exists():
     pattern = re.compile(r"(?:\]\(|src=\"|srcset=\"|```\{image\} )([^)\"\s]+\.(?:png|webp|svg))")
+    inline_code = re.compile(r"(?<!`)`[^`\n]+`(?!`)")  # examples in prose, not references
     for page in CONTENT.rglob("*.md"):
-        for ref in pattern.findall(page.read_text()):
+        for ref in pattern.findall(inline_code.sub("", page.read_text())):
             assert (page.parent / ref).resolve().exists(), f"{page.name}: {ref}"
