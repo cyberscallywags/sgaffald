@@ -13,6 +13,11 @@ updates:
     schedule: { interval: weekly }
     commit-message: { prefix: TASK }
     groups: { mobile: { patterns: ["*"] } }
+    # Angular 22 does not support TypeScript 7 yet (@angular/build's peer range refuses it).
+    # Drop this once an Angular release accepts it.
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: weekly }
