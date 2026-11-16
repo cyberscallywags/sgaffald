@@ -21,7 +21,7 @@ COPY docs ./docs
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --group docs && uv run --no-sync task docs
 
-FROM nginxinc/nginx-unprivileged:1.29-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS runtime
 COPY docker/docs.nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/docs/_build/site /usr/share/nginx/html
 EXPOSE 8080
